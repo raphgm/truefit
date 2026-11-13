@@ -50,24 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ])),
       ),
       const SizedBox(height: 16),
-      // AI studio strip
-      Material(
-        color: lavender, borderRadius: BorderRadius.circular(20),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(20), onTap: () => s.go(AppTab.studio),
-          child: Padding(padding: const EdgeInsets.all(16), child: Row(children: [
-            Container(width: 44, height: 44, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(14)),
-                child: const Icon(Icons.auto_awesome, color: purple)),
-            const SizedBox(width: 14),
-            const Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('AI Measurement Studio', style: TextStyle(fontWeight: FontWeight.w800, color: dark)),
-              SizedBox(height: 2),
-              Text('Two-angle photo scan & named fit profiles for individual or group fittings.', style: TextStyle(color: muted, fontSize: 12.5)),
-            ])),
-            const Icon(Icons.arrow_forward, color: purple),
-          ])),
-        ),
-      ),
+      _journey(s),
       const SizedBox(height: 26),
       Text('Find your next look', style: display(24)),
       const SizedBox(height: 12),
@@ -100,5 +83,62 @@ class _HomeScreenState extends State<HomeScreen> {
         ]),
       ),
     ]);
+  }
+
+  /// "Your style journey": a checklist with a progress ring that always offers the next step.
+  Widget _journey(AppState s) {
+    final measured = s.profiles.any((p) => p.analysis != null || !(p.updatedAt == 'Baseline profile' || p.updatedAt == 'New profile'));
+    final steps = <(String, String, IconData, bool, VoidCallback)>[
+      ('Get measured', 'Scan or set your measurements', Icons.straighten, measured, () => s.go(AppTab.studio)),
+      ('Save a look you love', 'Tap the heart on any style', Icons.favorite_border, s.favorites.isNotEmpty, () {}),
+      ('Book your first fitting', 'Choose a style, fabric and date', Icons.content_cut, s.orders.isNotEmpty, () => s.go(AppTab.book)),
+      ('Add a family or group profile', 'Measure for an Aso-ebi group', Icons.group_add_outlined, s.profiles.length > 1, () => s.go(AppTab.studio)),
+    ];
+    final done = steps.where((x) => x.$4).length;
+    final next = steps.where((x) => !x.$4).firstOrNull;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24), border: Border.all(color: line),
+          boxShadow: const [BoxShadow(color: Color(0x0F211D2B), blurRadius: 18, offset: Offset(0, 6))]),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          SizedBox(width: 52, height: 52, child: Stack(alignment: Alignment.center, children: [
+            SizedBox.expand(child: TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: done / steps.length), duration: const Duration(milliseconds: 700), curve: Curves.easeOutCubic,
+              builder: (_, v, _) => CircularProgressIndicator(value: v, strokeWidth: 6, backgroundColor: lavender, valueColor: const AlwaysStoppedAnimation(purple), strokeCap: StrokeCap.round),
+            )),
+            Text('$done/${steps.length}', style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13)),
+          ])),
+          const SizedBox(width: 14),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('Your style journey', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+            const SizedBox(height: 2),
+            Text(next == null ? 'All done. Your studio is ready for you.' : 'Next: ${next.$1.toLowerCase()}',
+                style: const TextStyle(color: muted, fontSize: 12.5)),
+          ])),
+        ]),
+        const SizedBox(height: 12),
+        for (final (title, sub, icon, ok, go) in steps) InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: ok ? null : go,
+          child: Padding(padding: const EdgeInsets.symmetric(vertical: 7), child: Row(children: [
+            AnimatedContainer(duration: const Duration(milliseconds: 300), width: 32, height: 32,
+                decoration: BoxDecoration(color: ok ? purple : lavender, borderRadius: BorderRadius.circular(10)),
+                child: Icon(ok ? Icons.check_rounded : icon, size: 17, color: ok ? Colors.white : purple)),
+            const SizedBox(width: 12),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5,
+                  color: ok ? muted : dark, decoration: ok ? TextDecoration.lineThrough : null, decorationColor: muted)),
+              Text(sub, style: const TextStyle(color: muted, fontSize: 11.5)),
+            ])),
+            if (!ok) const Icon(Icons.chevron_right, color: muted, size: 20),
+          ])),
+        ),
+        if (next != null && next.$1 != 'Save a look you love') ...[
+          const SizedBox(height: 8),
+          FilledButton(style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(46)), onPressed: next.$5, child: Text(next.$1)),
+        ],
+      ]),
+    );
   }
 }

@@ -287,18 +287,28 @@ class _StudioScreenState extends State<StudioScreen> {
   Widget _slider(AppState s, FitProfile p, String k) {
     final b = measurementBounds[k]!;
     final v = p.measurements[k]!.clamp(b.min, b.max);
-    return Padding(padding: const EdgeInsets.only(bottom: 6), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Row(children: [
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(k, style: const TextStyle(fontWeight: FontWeight.w800)),
-          Text(b.helper, style: const TextStyle(color: muted, fontSize: 11.5)),
-        ])),
-        Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: lavender, borderRadius: BorderRadius.circular(10)),
-            child: Text(fmt(v), style: const TextStyle(fontWeight: FontWeight.w800, color: purple, fontFeatures: [FontFeature.tabularFigures()]))),
+    void nudge(double d) { setState(() => p.measurements[k] = (v + d).clamp(b.min, b.max)); s.changed(); }
+    Widget step(IconData i, double d) => SizedBox(width: 34, height: 34, child: IconButton.filledTonal(
+        padding: EdgeInsets.zero, iconSize: 18, onPressed: () => nudge(d), icon: Icon(i),
+        style: IconButton.styleFrom(backgroundColor: lavender, foregroundColor: purple)));
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.fromLTRB(14, 12, 10, 4),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(18), border: Border.all(color: line)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(k, style: const TextStyle(fontWeight: FontWeight.w800)),
+            Text(b.helper, style: const TextStyle(color: muted, fontSize: 11.5)),
+          ])),
+          step(Icons.remove, inches ? -0.635 : -0.5),
+          Container(width: 82, alignment: Alignment.center,
+              child: Text(fmt(v), style: const TextStyle(fontWeight: FontWeight.w900, color: purple, fontSize: 15, fontFeatures: [FontFeature.tabularFigures()]))),
+          step(Icons.add, inches ? 0.635 : 0.5),
+        ]),
+        Slider(value: v, min: b.min, max: b.max, divisions: ((b.max - b.min) * 2).round(), label: fmt(v),
+            onChanged: (x) => setState(() => p.measurements[k] = x), onChangeEnd: (_) => s.changed()),
       ]),
-      Slider(value: v, min: b.min, max: b.max, divisions: ((b.max - b.min) * 2).round(), label: fmt(v),
-          onChanged: (x) => setState(() => p.measurements[k] = x), onChangeEnd: (_) => s.changed()),
-    ]));
+    );
   }
 
   Widget _label(String t) => Padding(padding: const EdgeInsets.only(bottom: 6),

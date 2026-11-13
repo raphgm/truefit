@@ -98,11 +98,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
       const SizedBox(height: 10),
       Align(alignment: Alignment.centerRight, child: TextButton.icon(onPressed: () => showCutSheet(context, o), icon: const Icon(Icons.description_outlined, size: 18), label: const Text('Cut-Sheet'))),
       Row(children: [
-        for (var i = 0; i < orderStages.length; i++) Expanded(child: Padding(padding: EdgeInsets.only(right: i < 3 ? 6 : 0), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Container(height: 6, decoration: BoxDecoration(color: i <= idx ? purple : lavender, borderRadius: BorderRadius.circular(3))),
-          const SizedBox(height: 4),
-          Text(orderStages[i], style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: i <= idx ? dark : muted)),
-        ]))),
+        for (var i = 0; i < orderStages.length; i++) ...[
+          Expanded(child: Column(children: [
+            AnimatedContainer(duration: const Duration(milliseconds: 300), width: 34, height: 34,
+                decoration: BoxDecoration(shape: BoxShape.circle, color: i <= idx ? purple : lavender,
+                    boxShadow: i == idx ? [BoxShadow(color: purple.withValues(alpha: 0.35), blurRadius: 10)] : null),
+                child: Icon(const [Icons.checkroom, Icons.handshake_outlined, Icons.content_cut, Icons.local_shipping_outlined][i],
+                    size: 17, color: i <= idx ? Colors.white : purple)),
+            const SizedBox(height: 6),
+            Text(orderStages[i], textAlign: TextAlign.center, style: TextStyle(fontSize: 10, height: 1.2, fontWeight: FontWeight.w700, color: i <= idx ? dark : muted)),
+          ])),
+          if (i < orderStages.length - 1) Expanded(child: Padding(padding: const EdgeInsets.only(bottom: 24),
+              child: Container(height: 3, decoration: BoxDecoration(color: i < idx ? purple : lavender, borderRadius: BorderRadius.circular(2))))),
+        ],
       ]),
       const SizedBox(height: 14),
       const Row(children: [Icon(Icons.forum_outlined, size: 18, color: purple), SizedBox(width: 6), Text('Studio Updates & Fitting Notes', style: TextStyle(fontWeight: FontWeight.w800))]),
@@ -111,6 +119,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
         const Text('No fitting photos or notes posted yet. Leave a question for the studio below.', style: TextStyle(color: muted, fontSize: 12.5))
       else
         for (final m in o.messages) _bubble(o, m),
+      const SizedBox(height: 8),
+      Wrap(spacing: 6, runSpacing: 6, children: [
+        for (final q in const ['When is my fitting?', 'Can I change the fabric?', 'Is it ready yet?', 'Please send a photo'])
+          ActionChip(label: Text(q, style: const TextStyle(fontSize: 12)), backgroundColor: bg, side: const BorderSide(color: line),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)), onPressed: () => s.postMessage(o, 'Client', q)),
+      ]),
       const SizedBox(height: 8),
       Row(children: [
         Expanded(child: TextField(controller: draft, onSubmitted: (_) => send(), textInputAction: TextInputAction.send,
@@ -150,34 +164,45 @@ class ProfileScreen extends StatelessWidget {
     String n(int c, String one, String many) => '$c ${c == 1 ? one : many}';
     final rows = <(IconData, String, String, VoidCallback)>[
       (Icons.favorite_border, 'Saved Looks', n(s.favorites.length, 'saved design', 'saved designs'), () => s.go(AppTab.saved)),
-      (Icons.straighten, 'My Fit Profiles', '${n(s.profiles.length, 'measurement profile', 'measurement profiles')} saved', () => s.go(AppTab.studio)),
+      (Icons.straighten, 'My Fit Profiles', n(s.profiles.length, 'profile saved', 'profiles saved'), () => s.go(AppTab.studio)),
       (Icons.shopping_bag_outlined, 'My Orders', n(s.orders.length, 'custom order', 'custom orders'), () => s.go(AppTab.orders)),
-      (Icons.storefront_outlined, 'Book a Fitting', 'Studio details & submit a custom order', () => s.go(AppTab.book)),
-      (Icons.work_outline, 'Tailor Studio Desk', 'Manage incoming orders, WIP photos, payments & cut-sheets', () => s.go(AppTab.tailorDesk)),
-      (Icons.settings_outlined, 'Settings & Privacy', 'Notifications and measurement privacy', () => _sheet(context, 'settings')),
-      (Icons.help_outline, 'Help & Support', 'Measuring tips and order assistance', () => _sheet(context, 'help')),
+      (Icons.storefront_outlined, 'Book a Fitting', 'Pick a style, fabric and date', () => s.go(AppTab.book)),
+      (Icons.work_outline, 'Tailor Studio Desk', 'Orders, payments and cut-sheets', () => s.go(AppTab.tailorDesk)),
+      (Icons.settings_outlined, 'Settings & Privacy', 'Notifications and privacy', () => _sheet(context, 'settings')),
+      (Icons.help_outline, 'Help & Support', 'Measuring tips and help', () => _sheet(context, 'help')),
     ];
     return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
       pageHeader(u.name, u.email,
           image: 'assets/images/outfit_weekend_fit.jpg', icon: Icons.person_outline, eyebrow: u.isGuest ? 'Guest account' : 'My account', tint: const Color(0xFFFFE9D9),
           trailing: bannerChip(Icons.checkroom, '${s.favorites.length} saved · ${s.orders.length} orders')),
-      Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: card(padding: EdgeInsets.zero, child: Column(children: [
-        for (final (i, r) in rows.indexed) ...[
-          ListTile(
-            leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: lavender, borderRadius: BorderRadius.circular(12)), child: Icon(r.$1, color: purple)),
-            title: Text(r.$2, style: const TextStyle(fontWeight: FontWeight.w800)),
-            subtitle: Text(r.$3, style: const TextStyle(fontSize: 12)),
-            trailing: const Icon(Icons.chevron_right), onTap: r.$4,
-          ),
-          if (i < rows.length - 1) const Divider(height: 1, indent: 70),
+      Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: GridView.count(
+        crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
+        mainAxisSpacing: 10, crossAxisSpacing: 10, childAspectRatio: 1.5,
+        children: [
+          for (final (i, r) in rows.indexed) _tile(r.$1, r.$2, r.$3, r.$4, const [
+            Color(0xFFFFE4EF), Color(0xFFEAE3FF), Color(0xFFE0ECFF), Color(0xFFFFF1D6), Color(0xFFE5ECF6), Color(0xFFF1F5F9), Color(0xFFFFE9D9),
+          ][i % 7]),
         ],
-      ]))),
+      )),
       const SizedBox(height: 14),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: OutlinedButton.icon(
           style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), foregroundColor: rose, backgroundColor: Colors.white),
           onPressed: s.signOut, icon: const Icon(Icons.logout), label: const Text('Sign Out'))),
     ]);
   }
+
+  Widget _tile(IconData icon, String title, String sub, VoidCallback on, Color tint) => Material(
+        color: tint, borderRadius: BorderRadius.circular(20),
+        child: InkWell(borderRadius: BorderRadius.circular(20), onTap: on, child: Padding(padding: const EdgeInsets.all(14), child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Container(width: 36, height: 36, decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)), child: Icon(icon, color: purple, size: 19)),
+            const Spacer(),
+            Text(title, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14)),
+            const SizedBox(height: 2),
+            Text(sub, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: muted, fontSize: 11.5, height: 1.3)),
+          ],
+        ))),
+      );
 
   void _sheet(BuildContext context, String which) {
     showModalBottomSheet(context: context, isScrollControlled: true, useSafeArea: true,
