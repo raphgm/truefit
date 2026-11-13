@@ -1,7 +1,7 @@
 import { AtelierProfile, FitProfile, Measurements, OrderStage, Outfit } from "../types";
 
 export const HERO_ATELIER_IMAGE =
-  "/src/assets/images/hero_atelier_studio_1794553282744.jpg";
+  "/images/hero_atelier_studio_1794553282744.jpg";
 
 export const DEFAULT_MEASUREMENTS: Measurements = {
   Chest: 96,
@@ -60,7 +60,7 @@ export const OUTFITS: Outfit[] = [
     category: "Ankara",
     priceNaira: 25000,
     priceLabel: "From ₦25,000",
-    image: "/src/assets/images/outfit_ankara_elegance_1794553281847.jpg",
+    image: "/images/outfit_ankara_elegance_1794553281847.jpg",
     surfaceTint: "#FFE4EF",
     aspectClass: "aspect-[3/4]",
     fabric: "100% Dutch Wax Cotton",
@@ -75,7 +75,7 @@ export const OUTFITS: Outfit[] = [
     category: "Traditional",
     priceNaira: 45000,
     priceLabel: "From ₦45,000",
-    image: "/src/assets/images/outfit_modern_agbada_1794553282980.jpg",
+    image: "/images/outfit_modern_agbada_1794553282980.jpg",
     surfaceTint: "#EAE3FF",
     aspectClass: "aspect-[4/5]",
     fabric: "Midweight Cashmere-Blend Guinea Brocade",
@@ -90,7 +90,7 @@ export const OUTFITS: Outfit[] = [
     category: "Casual",
     priceNaira: 18000,
     priceLabel: "From ₦18,000",
-    image: "/src/assets/images/outfit_minimalist_chic_1794553283564.jpg",
+    image: "/images/outfit_minimalist_chic_1794553283564.jpg",
     surfaceTint: "#FFE9D9",
     aspectClass: "aspect-[4/5]",
     fabric: "Breathable Belgian Linen",
@@ -105,7 +105,7 @@ export const OUTFITS: Outfit[] = [
     category: "Formal",
     priceNaira: 55000,
     priceLabel: "From ₦55,000",
-    image: "/src/assets/images/outfit_classic_suit_1794553283624.jpg",
+    image: "/images/outfit_classic_suit_1794553283624.jpg",
     surfaceTint: "#E5ECF6",
     aspectClass: "aspect-[3/4]",
     fabric: "Super 120s Charcoal Merino Wool",
@@ -120,7 +120,7 @@ export const OUTFITS: Outfit[] = [
     category: "Traditional",
     priceNaira: 35000,
     priceLabel: "From ₦35,000",
-    image: "/src/assets/images/outfit_elegant_boubou_1794553285121.jpg",
+    image: "/images/outfit_elegant_boubou_1794553285121.jpg",
     surfaceTint: "#DDF5E8",
     aspectClass: "aspect-[3/4]",
     fabric: "Silk Crepe with Hand-Beaded Trim",
@@ -135,7 +135,7 @@ export const OUTFITS: Outfit[] = [
     category: "Casual",
     priceNaira: 20000,
     priceLabel: "From ₦20,000",
-    image: "/src/assets/images/outfit_weekend_fit_1794553285372.jpg",
+    image: "/images/outfit_weekend_fit_1794553285372.jpg",
     surfaceTint: "#FFE4EF",
     aspectClass: "aspect-[4/5]",
     fabric: "Slub Textured Cotton & Twill",
