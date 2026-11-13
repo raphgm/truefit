@@ -12,7 +12,9 @@ class SavedScreen extends StatelessWidget {
     final s = AppScope.of(context);
     final saved = outfits.where((o) => s.favorites.contains(o.id)).toList();
     return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
-      pageHeader('Saved Looks', 'Your personal curation of custom styles ready to commission.'),
+      pageHeader('Saved Looks', 'Your personal curation of custom styles ready to commission.',
+          image: 'assets/images/outfit_ankara_elegance.jpg', icon: Icons.favorite_border, eyebrow: 'Your lookbook',
+          trailing: bannerChip(Icons.favorite, '${saved.length} saved')),
       if (saved.isEmpty)
         _empty(Icons.favorite_border, 'No saved looks yet', 'Explore the lookbook and tap the heart on any design you love.', 'Browse Lookbook', () => s.go(AppTab.home))
       else
@@ -52,7 +54,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     final s = AppScope.of(context);
     return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
-      pageHeader('My Orders', 'Track each custom garment, see fitting updates, and open your measurement sheet.'),
+      pageHeader('My Orders', 'Track each custom garment, see fitting updates, and open your measurement sheet.',
+          image: 'assets/images/outfit_classic_suit.jpg', icon: Icons.shopping_bag_outlined, eyebrow: 'Your commissions',
+          trailing: bannerChip(Icons.receipt_long, '${s.orders.length} ${s.orders.length == 1 ? 'order' : 'orders'}')),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: OutlinedButton.icon(
           style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(46), backgroundColor: Colors.white),
           onPressed: () => s.go(AppTab.tailorDesk), icon: const Icon(Icons.work_outline), label: const Text('Tailor Studio Desk'))),
@@ -153,24 +157,11 @@ class ProfileScreen extends StatelessWidget {
       (Icons.settings_outlined, 'Settings & Privacy', 'Notifications and measurement privacy', () => _sheet(context, 'settings')),
       (Icons.help_outline, 'Help & Support', 'Measuring tips and order assistance', () => _sheet(context, 'help')),
     ];
-    return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 24), children: [
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(gradient: const LinearGradient(colors: [purple, Color(0xFF4B2FB8)]), borderRadius: BorderRadius.circular(26)),
-        child: Row(children: [
-          CircleAvatar(radius: 30, backgroundColor: Colors.white24, child: Text(u.name.isEmpty ? '?' : u.name[0].toUpperCase(),
-              style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w900))),
-          const SizedBox(width: 14),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(u.name, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w900)),
-            Text(u.email, style: const TextStyle(color: Colors.white70)),
-            const SizedBox(height: 4),
-            Text('${s.favorites.length} saved · ${s.orders.length} orders', style: const TextStyle(color: Colors.white70, fontSize: 12)),
-          ])),
-        ]),
-      ),
-      const SizedBox(height: 14),
-      card(padding: EdgeInsets.zero, child: Column(children: [
+    return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
+      pageHeader(u.name, u.email,
+          image: 'assets/images/outfit_weekend_fit.jpg', icon: Icons.person_outline, eyebrow: u.isGuest ? 'Guest account' : 'My account',
+          trailing: bannerChip(Icons.checkroom, '${s.favorites.length} saved · ${s.orders.length} orders')),
+      Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: card(padding: EdgeInsets.zero, child: Column(children: [
         for (final (i, r) in rows.indexed) ...[
           ListTile(
             leading: Container(width: 40, height: 40, decoration: BoxDecoration(color: lavender, borderRadius: BorderRadius.circular(12)), child: Icon(r.$1, color: purple)),
@@ -180,10 +171,11 @@ class ProfileScreen extends StatelessWidget {
           ),
           if (i < rows.length - 1) const Divider(height: 1, indent: 70),
         ],
-      ])),
+      ]))),
       const SizedBox(height: 14),
-      OutlinedButton.icon(style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), foregroundColor: rose, backgroundColor: Colors.white),
-          onPressed: s.signOut, icon: const Icon(Icons.logout), label: const Text('Sign Out')),
+      Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: OutlinedButton.icon(
+          style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), foregroundColor: rose, backgroundColor: Colors.white),
+          onPressed: s.signOut, icon: const Icon(Icons.logout), label: const Text('Sign Out'))),
     ]);
   }
 

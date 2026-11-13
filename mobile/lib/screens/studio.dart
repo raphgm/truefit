@@ -113,7 +113,9 @@ class _StudioScreenState extends State<StudioScreen> {
     if (_pid != p.id) { _pid = p.id; height.text = p.heightCm.round().toString(); front = null; side = null; }
     final a = p.analysis;
     return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
-      pageHeader('Fit Studio', 'Save named measurement profiles for yourself, group fittings, or family events.'),
+      pageHeader('Fit Studio', 'Save named measurement profiles for yourself, group fittings, or family events.',
+          image: 'assets/images/outfit_modern_agbada.jpg', icon: Icons.straighten, eyebrow: 'AI measurements',
+          trailing: bannerChip(Icons.person_outline, '${s.profiles.length} ${s.profiles.length == 1 ? 'profile' : 'profiles'}')),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: SegmentedButton<bool>(
         segments: const [ButtonSegment(value: false, label: Text('Centimeters (cm)')), ButtonSegment(value: true, label: Text('Inches (in)'))],
         selected: {inches}, showSelectedIcon: false, onSelectionChanged: (v) => setState(() => inches = v.first),

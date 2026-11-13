@@ -27,15 +27,46 @@ Widget card({required Widget child, EdgeInsets padding = const EdgeInsets.all(18
       child: child,
     );
 
-Widget pageHeader(String title, String subtitle, {Widget? trailing}) => Padding(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 12),
-      child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: display(28)),
-          const SizedBox(height: 6),
-          Text(subtitle, style: const TextStyle(color: muted, height: 1.4)),
-        ])),
-        ?trailing,
+/// Banner at the top of each screen: a studio photo under a purple gradient, an icon, the title,
+/// a short line and optional extra content (stats, a profile row).
+Widget pageHeader(String title, String subtitle, {required String image, required IconData icon, String? eyebrow,
+    Widget? trailing, Widget? child, Alignment focus = const Alignment(0, -0.3), bool inset = true}) => Padding(
+      padding: inset ? const EdgeInsets.fromLTRB(16, 8, 16, 14) : const EdgeInsets.only(bottom: 14),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(28),
+        child: Stack(children: [
+          Positioned.fill(child: Image.asset(image, fit: BoxFit.cover, alignment: focus)),
+          const Positioned.fill(child: DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(
+            begin: Alignment.topLeft, end: Alignment.bottomRight,
+            colors: [Color(0xE6211D2B), Color(0xCC4B2FB8), Color(0xB37654E8)], stops: [0, 0.6, 1],
+          )))),
+          Padding(padding: const EdgeInsets.fromLTRB(20, 20, 20, 20), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Container(width: 40, height: 40, decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(13),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.2))), child: Icon(icon, color: Colors.white, size: 21)),
+              const Spacer(),
+              ?trailing,
+            ]),
+            const SizedBox(height: 14),
+            if (eyebrow != null) Padding(padding: const EdgeInsets.only(bottom: 4),
+                child: Text(eyebrow.toUpperCase(), style: const TextStyle(color: lavender, fontSize: 11, fontWeight: FontWeight.w800, letterSpacing: 1.1))),
+            Text(title, style: display(27, color: Colors.white)),
+            const SizedBox(height: 6),
+            Text(subtitle, style: TextStyle(color: Colors.white.withValues(alpha: 0.8), height: 1.4, fontSize: 13.5)),
+            if (child != null) ...[const SizedBox(height: 16), child],
+          ])),
+        ]),
+      ),
+    );
+
+/// A small frosted chip for banners (e.g. a rating or a count).
+Widget bannerChip(IconData icon, String text) => Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.16), borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.2))),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(icon, size: 14, color: Colors.white), const SizedBox(width: 5),
+        Text(text, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700)),
       ]),
     );
 

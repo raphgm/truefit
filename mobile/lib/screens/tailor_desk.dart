@@ -31,20 +31,9 @@ class _TailorDeskScreenState extends State<TailorDeskScreen> {
     final active = s.orders.where((o) => o.stage != orderStages.last).length;
     final rush = s.orders.where((o) => o.isRushOrder).length;
     return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 24), children: [
-      Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(color: dark, borderRadius: BorderRadius.circular(26)),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('STUDIO MANAGEMENT · ${houseAtelier.name.toUpperCase()}', style: const TextStyle(color: lavender, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1)),
-          const SizedBox(height: 6),
-          Text('Tailor Studio Desk', style: display(26, color: Colors.white)),
-          const SizedBox(height: 6),
-          const Text('Inspect client measurements, open cutting sheets, update stages, and send WIP fitting photos.', style: TextStyle(color: Colors.white70, height: 1.4)),
-          const SizedBox(height: 14),
-          Row(children: [_stat(Icons.receipt_long, '${s.orders.length}', 'Orders', lavender), _stat(Icons.hourglass_bottom, '$active', 'In queue', const Color(0xFFFDE68A)), _stat(Icons.bolt, '$rush', 'Rush', const Color(0xFFFBCFE8), last: true)]),
-        ]),
-      ),
-      const SizedBox(height: 14),
+      pageHeader('Tailor Studio Desk', 'Inspect client measurements, open cutting sheets, update stages, and send WIP fitting photos.',
+          image: 'assets/images/hero_atelier_studio.jpg', icon: Icons.work_outline, eyebrow: 'Studio management · ${houseAtelier.name}', inset: false,
+          child: Row(children: [_stat(Icons.receipt_long, '${s.orders.length}', 'Orders', lavender), _stat(Icons.hourglass_bottom, '$active', 'In queue', const Color(0xFFFDE68A)), _stat(Icons.bolt, '$rush', 'Rush', const Color(0xFFFBCFE8), last: true)])),
       if (s.orders.isEmpty)
         card(padding: const EdgeInsets.all(26), child: const Column(children: [
           Icon(Icons.shopping_bag_outlined, color: purple, size: 34), SizedBox(height: 10),

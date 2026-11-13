@@ -77,24 +77,12 @@ class _BookScreenState extends State<BookScreen> {
     final s = AppScope.of(context);
     final p = s.activeProfile;
     return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 28), children: [
-      // Studio header
-      card(child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Container(width: 54, height: 54, decoration: BoxDecoration(color: Color(houseAtelier.tint), borderRadius: BorderRadius.circular(16)),
-            child: const Icon(Icons.content_cut, color: amber)),
-        const SizedBox(width: 14),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            Expanded(child: Text(houseAtelier.name, style: display(20))),
-            const Icon(Icons.star_rounded, color: Color(0xFFF59E0B), size: 18),
-            Text(houseAtelier.rating.toStringAsFixed(1), style: const TextStyle(fontWeight: FontWeight.w800)),
-          ]),
-          const SizedBox(height: 4),
-          Text('${houseAtelier.location} · Turnaround ${houseAtelier.turnaround}', style: const TextStyle(color: muted, fontSize: 12.5)),
-          const SizedBox(height: 6),
-          Text(houseAtelier.bio, style: const TextStyle(color: muted, fontSize: 12.5, height: 1.4)),
-        ])),
-      ])),
-      const SizedBox(height: 16),
+      // Banner
+      pageHeader('Book a Fitting', '${houseAtelier.location} · Turnaround ${houseAtelier.turnaround}',
+          image: 'assets/images/outfit_elegant_boubou.jpg', icon: Icons.content_cut, eyebrow: houseAtelier.name, inset: false,
+          trailing: bannerChip(Icons.star_rounded, houseAtelier.rating.toStringAsFixed(1)),
+          child: Text(houseAtelier.bio, style: TextStyle(color: Colors.white.withValues(alpha: 0.72), fontSize: 12.5, height: 1.4))),
+      const SizedBox(height: 4),
       Text('Book a Custom Order', style: display(24)),
       const SizedBox(height: 4),
       const Text('Pick a studio look or upload your own style inspiration.', style: TextStyle(color: muted)),
