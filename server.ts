@@ -2,7 +2,6 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI, Type } from "@google/genai";
 
 dotenv.config();
@@ -10,7 +9,11 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
+// Gemini model used for both endpoints; override with GEMINI_MODEL if needed.
+const MODEL = process.env.GEMINI_MODEL || "gemini-4-hydrogen";
+// Sites allowed to call the API from a browser (comma separated). The Android app is not a browser and is not affected.
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "*").split(",").map((o) => o.trim());
 
 function getGeminiClient() {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -31,8 +34,20 @@ async function startServer() {
   const app = express();
   app.use(express.json({ limit: "18mb" }));
 
+  // Let the Flutter web build (or another site) call the API.
+  app.use("/api", (req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && (ALLOWED_ORIGINS.includes("*") || ALLOWED_ORIGINS.includes(origin))) {
+      res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGINS.includes("*") ? "*" : origin);
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    }
+    if (req.method === "OPTIONS") return res.sendStatus(204);
+    next();
+  });
+
   app.get("/api/health", (_req, res) => {
-    res.json({ ok: true });
+    res.json({ ok: true, model: MODEL, geminiKeySet: Boolean(process.env.GEMINI_API_KEY) });
   });
 
   app.post("/api/fit-analyze", async (req, res) => {
@@ -112,7 +127,7 @@ async function startServer() {
       parts.push({ text: promptLines.join("\n") });
 
       const response = await ai.models.generateContent({
-        model: "gemini-4-hydrogen",
+        model: MODEL,
         contents: { parts },
         config: {
           systemInstruction:
@@ -205,7 +220,7 @@ async function startServer() {
       const ai = getGeminiClient();
 
       const response = await ai.models.generateContent({
-        model: "gemini-4-hydrogen",
+        model: MODEL,
         contents: {
           parts: [
             {
@@ -263,6 +278,7 @@ async function startServer() {
   });
 
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",

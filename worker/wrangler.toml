@@ -1,0 +1,7 @@
+name = "truefit-ai"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+[vars]
+GEMINI_MODEL = "gemini-4-hydrogen"
+# ALLOWED_ORIGINS = "https://your-site.example"  # optional: limit which websites may call the API
