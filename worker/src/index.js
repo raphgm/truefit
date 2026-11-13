@@ -110,6 +110,9 @@ export default {
     const h = cors(env, request);
     const { pathname } = new URL(request.url);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: h });
+    if (pathname === "/" || pathname === "") {
+      return json({ ok: true, service: "TrueFit AI API", health: "/api/health", geminiKeySet: Boolean(env.GEMINI_API_KEY) }, 200, h);
+    }
     if (pathname === "/api/health") {
       return json({ ok: true, model: env.GEMINI_MODEL || "gemini-4-hydrogen", geminiKeySet: Boolean(env.GEMINI_API_KEY) }, 200, h);
     }
