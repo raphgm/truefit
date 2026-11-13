@@ -40,7 +40,7 @@ class TrueFitApp extends StatelessWidget {
         ),
         snackBarTheme: SnackBarThemeData(backgroundColor: dark, behavior: SnackBarBehavior.floating,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-        navigationBarTheme: NavigationBarThemeData(backgroundColor: Colors.white, indicatorColor: lavender,
+        navigationBarTheme: NavigationBarThemeData(backgroundColor: Colors.white, indicatorColor: lavender, height: 66, elevation: 0,
             labelTextStyle: WidgetStateProperty.all(const TextStyle(fontSize: 12, fontWeight: FontWeight.w600))),
       ),
       home: const Root(),
@@ -48,13 +48,7 @@ class TrueFitApp extends StatelessWidget {
       builder: (context, child) {
         final mq = MediaQuery.of(context);
         if (mq.size.width < 600) return child!;
-        final h = (mq.size.height - 48).clamp(560.0, 900.0);
-        return ColoredBox(color: const Color(0xFF16131D), child: Center(child: Container(
-          width: 412, height: h,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(44), color: Colors.black, border: Border.all(color: Colors.black, width: 10),
-              boxShadow: const [BoxShadow(color: Color(0x88000000), blurRadius: 60, offset: Offset(0, 24))]),
-          child: ClipRRect(borderRadius: BorderRadius.circular(34), child: MediaQuery(data: mq.copyWith(size: Size(392, h - 20)), child: child!)),
-        )));
+        return PhoneFrame(child: child!);
       },
     );
   }
@@ -135,6 +129,82 @@ class _RootState extends State<Root> {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+/// On a computer screen, shows the app inside a modern phone: 19.5:9 shape, thin bezel,
+/// Dynamic-Island-style notch, live status bar, home indicator and side buttons.
+class PhoneFrame extends StatefulWidget {
+  final Widget child;
+  const PhoneFrame({super.key, required this.child});
+  @override
+  State<PhoneFrame> createState() => _PhoneFrameState();
+}
+
+class _PhoneFrameState extends State<PhoneFrame> {
+  late final Stream<DateTime> _clock = Stream.periodic(const Duration(seconds: 20), (_) => DateTime.now());
+
+  @override
+  Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
+    final h = (mq.size.height - 56).clamp(520.0, 880.0);
+    final w = (h * 9 / 19.5).clamp(372.0, 420.0);
+    const bezel = 11.0, statusH = 50.0, homeH = 26.0;
+    final screen = Size(w - bezel * 2, h - bezel * 2);
+    Widget sideButton(double top, double height, {bool left = true}) => Positioned(
+          top: top, left: left ? -3 : null, right: left ? null : -3,
+          child: Container(width: 4, height: height, decoration: BoxDecoration(color: const Color(0xFF2A2730), borderRadius: BorderRadius.circular(2))),
+        );
+    return DecoratedBox(
+      decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -0.3), radius: 1.2,
+          colors: [Color(0xFF2B2246), Color(0xFF0E0C14)])),
+      child: Center(child: SizedBox(width: w, height: h, child: Stack(clipBehavior: Clip.none, children: [
+        sideButton(h * 0.17, 28), sideButton(h * 0.24, 54), sideButton(h * 0.33, 54), sideButton(h * 0.26, 86, left: false),
+        Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFF0A0A0C), borderRadius: BorderRadius.circular(56),
+            border: Border.all(color: const Color(0xFF3A3640), width: 1.5),
+            boxShadow: const [BoxShadow(color: Color(0x99000000), blurRadius: 70, offset: Offset(0, 30))],
+          ),
+          padding: const EdgeInsets.all(bezel),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(46),
+            child: Stack(children: [
+              MediaQuery(
+                data: mq.copyWith(size: screen, padding: const EdgeInsets.only(top: statusH, bottom: homeH),
+                    viewPadding: const EdgeInsets.only(top: statusH, bottom: homeH)),
+                child: widget.child,
+              ),
+              // Status bar
+              Positioned(top: 0, left: 0, right: 0, height: statusH, child: IgnorePointer(child: Material(type: MaterialType.transparency, child: Padding(
+                padding: const EdgeInsets.fromLTRB(30, 14, 26, 0),
+                child: ValueListenableBuilder<bool>(valueListenable: darkStatusBar, builder: (_, darkBg, _) => StreamBuilder<DateTime>(stream: _clock, builder: (_, snap) {
+                  final t = snap.data ?? DateTime.now();
+                  final c = darkBg ? Colors.white : dark;
+                  final time = '${t.hour % 12 == 0 ? 12 : t.hour % 12}:${t.minute.toString().padLeft(2, '0')}';
+                  return Row(children: [
+                    Text(time, style: TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: c, letterSpacing: -0.2)),
+                    const Spacer(),
+                    Icon(Icons.signal_cellular_alt, size: 16, color: c), const SizedBox(width: 4),
+                    Icon(Icons.wifi, size: 16, color: c), const SizedBox(width: 4),
+                    Icon(Icons.battery_full, size: 18, color: c),
+                  ]);
+                })),
+              )))),
+              // Notch
+              Positioned(top: 11, left: 0, right: 0, child: IgnorePointer(child: Center(child: Container(
+                width: 118, height: 34, decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(20)),
+              )))),
+              // Home indicator
+              Positioned(bottom: 8, left: 0, right: 0, child: IgnorePointer(child: Center(child: Container(
+                width: 130, height: 5, decoration: BoxDecoration(color: const Color(0xFF8E8A96), borderRadius: BorderRadius.circular(3)),
+              )))),
+            ]),
+          ),
+        ),
+      ]))),
     );
   }
 }

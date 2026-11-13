@@ -15,6 +15,9 @@ const rose = Color(0xFFE11D48);
 const amber = Color(0xFFB45309);
 const line = Color(0x14211D2B);
 
+/// True while a dark full-screen view is showing, so the browser phone frame draws a light status bar.
+final darkStatusBar = ValueNotifier<bool>(false);
+
 TextStyle display(double size, {Color color = dark}) => TextStyle(fontSize: size, fontWeight: FontWeight.w800, color: color, letterSpacing: -0.5, height: 1.1);
 const eyebrow = TextStyle(fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.1, color: purple);
 

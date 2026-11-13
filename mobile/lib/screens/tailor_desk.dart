@@ -41,7 +41,7 @@ class _TailorDeskScreenState extends State<TailorDeskScreen> {
           const SizedBox(height: 6),
           const Text('Inspect client measurements, open cutting sheets, update stages, and send WIP fitting photos.', style: TextStyle(color: Colors.white70, height: 1.4)),
           const SizedBox(height: 14),
-          Row(children: [_stat('${s.orders.length}', 'Total orders'), _stat('$active', 'In queue'), _stat('$rush', 'Rush deadlines')]),
+          Row(children: [_stat(Icons.receipt_long, '${s.orders.length}', 'Orders', lavender), _stat(Icons.hourglass_bottom, '$active', 'In queue', const Color(0xFFFDE68A)), _stat(Icons.bolt, '$rush', 'Rush', const Color(0xFFFBCFE8), last: true)]),
         ]),
       ),
       const SizedBox(height: 14),
@@ -57,12 +57,18 @@ class _TailorDeskScreenState extends State<TailorDeskScreen> {
     ]);
   }
 
-  Widget _stat(String v, String k) => Expanded(child: Container(
-        margin: const EdgeInsets.only(right: 8), padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(14)),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(v, style: const TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.w900)),
-          Text(k, style: const TextStyle(color: Colors.white60, fontSize: 11)),
+  Widget _stat(IconData icon, String v, String k, Color tint, {bool last = false}) => Expanded(child: Container(
+        height: 64, margin: EdgeInsets.only(right: last ? 0 : 8), padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
+        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.07), borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.08))),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Row(children: [
+            Container(width: 22, height: 22, decoration: BoxDecoration(color: tint, borderRadius: BorderRadius.circular(7)),
+                child: Icon(icon, size: 13, color: dark)),
+            const SizedBox(width: 7),
+            Text(v, style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w900, height: 1)),
+          ]),
+          Text(k, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white60, fontSize: 11.5, fontWeight: FontWeight.w600)),
         ]),
       ));
 

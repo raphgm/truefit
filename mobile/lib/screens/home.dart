@@ -21,27 +21,30 @@ class _HomeScreenState extends State<HomeScreen> {
     return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 24), children: [
       // Hero
       ClipRRect(
-        borderRadius: BorderRadius.circular(28),
-        child: Container(color: dark, child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-          SizedBox(height: 230, child: Stack(fit: StackFit.expand, children: [
-            Image.asset(heroImage, fit: BoxFit.cover),
-            const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
-                colors: [Colors.transparent, dark]))),
-          ])),
-          Padding(padding: const EdgeInsets.fromLTRB(22, 0, 22, 22), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('${houseAtelier.name.toUpperCase()} · BESPOKE STUDIO', style: const TextStyle(color: lavender, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.1)),
-            const SizedBox(height: 8),
+        borderRadius: BorderRadius.circular(30),
+        child: SizedBox(height: 400, child: Stack(fit: StackFit.expand, children: [
+          Image.asset(heroImage, fit: BoxFit.cover),
+          const DecoratedBox(decoration: BoxDecoration(gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
+              colors: [Color(0x00211D2B), Color(0x66211D2B), Color(0xF2211D2B)], stops: [0.15, 0.45, 0.85]))),
+          Positioned(top: 14, left: 14, child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.9), borderRadius: BorderRadius.circular(20)),
+            child: Text(houseAtelier.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: dark)),
+          )),
+          Positioned(left: 20, right: 20, bottom: 20, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text('Your perfect fit.\nYour own style.', style: display(30, color: Colors.white)),
-            const SizedBox(height: 10),
-            Text('Explore made-to-measure Ankara, traditional, and contemporary silhouettes, capture your measurements automatically, or upload your own style inspiration.',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.8), height: 1.45, fontSize: 14)),
+            const SizedBox(height: 8),
+            Text('Made-to-measure Ankara, traditional and contemporary pieces, cut to your AI-scanned measurements.',
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.82), height: 1.4, fontSize: 13.5)),
             const SizedBox(height: 16),
             Row(children: [
-              Expanded(child: FilledButton(style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(50), backgroundColor: Colors.white, foregroundColor: purple),
-                  onPressed: () => s.go(AppTab.studio), child: const Text('Create Fit Profile'))),
+              Expanded(child: FilledButton.icon(
+                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48), backgroundColor: Colors.white, foregroundColor: purple, padding: const EdgeInsets.symmetric(horizontal: 10)),
+                onPressed: () => s.go(AppTab.studio), icon: const Icon(Icons.straighten, size: 18), label: const FittedBox(fit: BoxFit.scaleDown, child: Text('Get measured', maxLines: 1)))),
               const SizedBox(width: 10),
-              Expanded(child: OutlinedButton(style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(50), foregroundColor: Colors.white,
-                  side: BorderSide(color: Colors.white.withValues(alpha: 0.3))), onPressed: () => s.go(AppTab.book), child: const Text('Book a Fitting'))),
+              Expanded(child: FilledButton.icon(
+                style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48), backgroundColor: purple, padding: const EdgeInsets.symmetric(horizontal: 10)),
+                onPressed: () => s.go(AppTab.book), icon: const Icon(Icons.content_cut, size: 18), label: const FittedBox(fit: BoxFit.scaleDown, child: Text('Book fitting', maxLines: 1)))),
             ]),
           ])),
         ])),

@@ -21,8 +21,15 @@ class _AuthScreenState extends State<AuthScreen> {
   void go(AuthView v) => setState(() => view = v);
 
   @override
+  void dispose() {
+    darkStatusBar.value = false;
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final s = AppScope.of(context);
+    WidgetsBinding.instance.addPostFrameCallback((_) => darkStatusBar.value = view == AuthView.welcome);
     return PopScope(
       canPop: view == AuthView.welcome,
       onPopInvokedWithResult: (popped, _) { if (!popped) go(view == AuthView.forgot ? AuthView.login : AuthView.welcome); },
