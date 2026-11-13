@@ -1,3 +1,5 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:material_ui/material_ui.dart';
 
 import 'screens/auth.dart';
@@ -118,21 +120,61 @@ class _RootState extends State<Root> {
           ],
         ),
         body: AnimatedSwitcher(duration: const Duration(milliseconds: 200), child: KeyedSubtree(key: ValueKey(s.tab), child: body)),
-        bottomNavigationBar: NavigationBar(
-          selectedIndex: navIndex,
-          onDestinationSelected: (i) => s.go(tabs[i]),
-          destinations: const [
-            NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home, color: purple), label: 'Home'),
-            NavigationDestination(icon: Icon(Icons.straighten_outlined), selectedIcon: Icon(Icons.straighten, color: purple), label: 'Fit Studio'),
-            NavigationDestination(icon: Icon(Icons.content_cut_outlined), selectedIcon: Icon(Icons.content_cut, color: purple), label: 'Book'),
-            NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person, color: purple), label: 'Profile'),
-          ],
-        ),
+        bottomNavigationBar: _GlassTabBar(index: navIndex, onTap: (i) => s.go(tabs[i])),
       ),
     );
   }
 }
 
+
+/// Floating, frosted tab bar like modern iOS apps.
+class _GlassTabBar extends StatelessWidget {
+  final int index;
+  final ValueChanged<int> onTap;
+  const _GlassTabBar({required this.index, required this.onTap});
+  static const _items = [
+    (Icons.home_outlined, Icons.home_rounded, 'Home'),
+    (Icons.straighten_outlined, Icons.straighten, 'Fit Studio'),
+    (Icons.content_cut_outlined, Icons.content_cut, 'Book'),
+    (Icons.person_outline, Icons.person_rounded, 'Profile'),
+  ];
+  @override
+  Widget build(BuildContext context) {
+    final bottom = MediaQuery.of(context).padding.bottom;
+    return Padding(
+      padding: EdgeInsets.fromLTRB(16, 0, 16, bottom > 0 ? bottom - 6 : 12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+          child: Container(
+            height: 64,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.78), borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.9)),
+              boxShadow: const [BoxShadow(color: Color(0x22211D2B), blurRadius: 24, offset: Offset(0, 8))],
+            ),
+            padding: const EdgeInsets.all(6),
+            child: Row(children: [
+              for (var i = 0; i < _items.length; i++) Expanded(child: GestureDetector(
+                behavior: HitTestBehavior.opaque, onTap: () => onTap(i),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 250), curve: Curves.easeOut,
+                  decoration: BoxDecoration(color: i == index ? purple : Colors.transparent, borderRadius: BorderRadius.circular(24)),
+                  child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Icon(i == index ? _items[i].$2 : _items[i].$1, size: 21, color: i == index ? Colors.white : muted),
+                    const SizedBox(height: 2),
+                    Text(_items[i].$3, style: TextStyle(fontSize: 10.5, fontWeight: FontWeight.w700, color: i == index ? Colors.white : muted)),
+                  ]),
+                ),
+              )),
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 /// On a computer screen, shows the app inside an iPhone-style phone: titanium edge, thin black
 /// bezel, Dynamic Island, iOS status bar, home indicator, Action button and Camera Control.
@@ -149,10 +191,10 @@ class _PhoneFrameState extends State<PhoneFrame> {
   @override
   Widget build(BuildContext context) {
     final mq = MediaQuery.of(context);
-    final h = (mq.size.height - 56).clamp(560.0, 900.0);
-    // iPhone 17 Pro Max body: 6.4 x 3.1 in (about 2.06 : 1).
-    final w = (h / 2.06).clamp(390.0, 440.0);
-    const edge = 4.0, bezel = 7.0, statusH = 54.0, homeH = 30.0;
+    // Always a true iPhone Pro Max shape (430 x 932 points), scaled as a whole to fit the window,
+    // so a short window never squashes the phone.
+    const w = 430.0, h = 932.0;
+    const edge = 3.0, bezel = 6.0, statusH = 54.0, homeH = 30.0;
     final screen = Size(w - (edge + bezel) * 2, h - (edge + bezel) * 2);
     const titanium = LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
         colors: [Color(0xFF8E8A93), Color(0xFF4A4750), Color(0xFF9C98A2), Color(0xFF3E3C44)], stops: [0, 0.35, 0.65, 1]);
@@ -164,7 +206,7 @@ class _PhoneFrameState extends State<PhoneFrame> {
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -0.2), radius: 1.1,
           colors: [Color(0xFF2E2840), Color(0xFF0C0B11)])),
-      child: Center(child: SizedBox(width: w, height: h, child: Stack(clipBehavior: Clip.none, children: [
+      child: Padding(padding: const EdgeInsets.all(22), child: Center(child: FittedBox(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 6), child: SizedBox(width: w, height: h, child: Stack(clipBehavior: Clip.none, children: [
         button(h * 0.15, 30),               // Action button
         button(h * 0.235, 58),              // Volume up
         button(h * 0.32, 58),               // Volume down
@@ -172,14 +214,14 @@ class _PhoneFrameState extends State<PhoneFrame> {
         button(h * 0.56, 46, left: false, width: 3), // Camera Control
         // Titanium edge
         Container(
-          decoration: BoxDecoration(gradient: titanium, borderRadius: BorderRadius.circular(62),
-              boxShadow: const [BoxShadow(color: Color(0xAA000000), blurRadius: 80, offset: Offset(0, 34))]),
+          decoration: BoxDecoration(gradient: titanium, borderRadius: BorderRadius.circular(64),
+              boxShadow: const [BoxShadow(color: Color(0xAA000000), blurRadius: 90, offset: Offset(0, 40))]),
           padding: const EdgeInsets.all(edge),
           child: Container(
-            decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(58)),
+            decoration: BoxDecoration(color: Colors.black, borderRadius: BorderRadius.circular(61)),
             padding: const EdgeInsets.all(bezel),
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(51),
+              borderRadius: BorderRadius.circular(55),
               child: Stack(children: [
                 MediaQuery(
                   data: mq.copyWith(size: screen, padding: const EdgeInsets.only(top: statusH, bottom: homeH),
@@ -225,7 +267,7 @@ class _PhoneFrameState extends State<PhoneFrame> {
             ),
           ),
         ),
-      ]))),
+      ])))))),
     );
   }
 }
