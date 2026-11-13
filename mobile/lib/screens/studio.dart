@@ -45,6 +45,14 @@ class _StudioScreenState extends State<StudioScreen> {
     _extract();
   }
 
+  Future<void> _phoneCameraFront() async {
+    final x = await ImagePicker().pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.front, maxWidth: 1600, imageQuality: 88);
+    if (x == null) return;
+    final b = await x.readAsBytes();
+    setState(() => front = b);
+    _extract();
+  }
+
   Future<void> _uploadFront() async {
     final b = await _pick();
     if (b == null) return;
@@ -167,6 +175,8 @@ class _StudioScreenState extends State<StudioScreen> {
           if (front == null) ...[
             FilledButton.icon(style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(54), backgroundColor: Colors.white, foregroundColor: purple),
                 onPressed: _scan, icon: const Icon(Icons.photo_camera), label: const Text('Start Automatic AI Scan')),
+            const SizedBox(height: 8),
+            _darkButton(Icons.add_a_photo_outlined, 'Take photo with phone camera', _phoneCameraFront),
             const SizedBox(height: 8),
             Row(children: [
               Expanded(child: _darkButton(Icons.upload, 'Upload Front', _uploadFront)),
