@@ -1,0 +1,2078 @@
+I'll restructure TrueFit AI into a more complete mobile app flow, with the landing page and authentication screens appearing before the main fashion experience.
+
+The new single-file version will include:
+
+- Welcome / landing page with brand introduction and Get Started / Sign In actions.
+- Login screen with email, password, password visibility, and validation.
+- Sign-up screen for new users.
+- Home dashboard with Pinterest-inspired fashion discovery.
+- AI Fit Studio with measurement profile controls.
+- Tailor discovery with search and sample tailor cards.
+- Saved designs and favorites.
+- My Orders screen.
+- Profile and settings screen.
+- Modern mobile bottom navigation, animations, and polished UI.
+
+Authentication and order data will be demo-only for now; no Firebase or other packages are needed for this UI prototype.
+
+## Complete Flutter code — `lib/main.dart`
+
+```
+
+import 'package:flutter/material.dart';
+
+void main() => runApp(const TrueFitAI());
+
+const purple = Color(0xFF7654E8);
+const dark = Color(0xFF211D2B);
+const bg = Color(0xFFFAF8FC);
+const muted = Color(0xFF96919F);
+const lavender = Color(0xFFEAE3FF);
+const peach = Color(0xFFFFE9D9);
+const mint = Color(0xFFDDF5E8);
+const pink = Color(0xFFFFE4EF);
+
+class TrueFitAI extends StatelessWidget {
+  const TrueFitAI({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'TrueFit AI',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true,
+        scaffoldBackgroundColor: bg,
+        colorScheme: ColorScheme.fromSeed(seedColor: purple),
+        fontFamily: 'Roboto',
+      ),
+      home: const WelcomePage(),
+    );
+  }
+}
+
+// ============================================================
+// DATA
+// ============================================================
+
+class Outfit {
+  final String name;
+  final String category;
+  final String price;
+  final IconData icon;
+  final Color color;
+  final double height;
+
+  const Outfit({
+    required this.name,
+    required this.category,
+    required this.price,
+    required this.icon,
+    required this.color,
+    required this.height,
+  });
+}
+
+const outfits = [
+  Outfit(
+    name: 'Ankara Elegance',
+    category: 'Ankara',
+    price: 'From ₦25,000',
+    icon: Icons.local_florist,
+    color: Color(0xFFFFDDE5),
+    height: 230,
+  ),
+  Outfit(
+    name: 'Modern Agbada',
+    category: 'Traditional',
+    price: 'From ₦45,000',
+    icon: Icons.checkroom,
+    color: Color(0xFFE3DCFF),
+    height: 290,
+  ),
+  Outfit(
+    name: 'Minimalist Chic',
+    category: 'Casual',
+    price: 'From ₦18,000',
+    icon: Icons.style,
+    color: Color(0xFFFFE7D0),
+    height: 280,
+  ),
+  Outfit(
+    name: 'Classic Suit',
+    category: 'Formal',
+    price: 'From ₦55,000',
+    icon: Icons.person,
+    color: Color(0xFFDDE9F5),
+    height: 225,
+  ),
+  Outfit(
+    name: 'Elegant Boubou',
+    category: 'Traditional',
+    price: 'From ₦35,000',
+    icon: Icons.dry_cleaning,
+    color: Color(0xFFDFF5E8),
+    height: 245,
+  ),
+  Outfit(
+    name: 'Weekend Fit',
+    category: 'Casual',
+    price: 'From ₦20,000',
+    icon: Icons.checkroom_outlined,
+    color: Color(0xFFFFE1E8),
+    height: 265,
+  ),
+];
+
+// ============================================================
+// WELCOME / LANDING PAGE
+// ============================================================
+
+class WelcomePage extends StatelessWidget {
+  const WelcomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Stack(
+          children: [
+            Positioned(
+              top: -100,
+              right: -80,
+              child: CircleAvatar(
+                radius: 180,
+                backgroundColor: lavender.withOpacity(0.5),
+              ),
+            ),
+            Positioned(
+              bottom: -90,
+              left: -90,
+              child: CircleAvatar(
+                radius: 170,
+                backgroundColor: pink.withOpacity(0.5),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        width: 45,
+                        height: 45,
+                        decoration: BoxDecoration(
+                          color: purple,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: const Icon(
+                          Icons.checkroom_rounded,
+                          color: Colors.white,
+                          size: 26,
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'TrueFit AI',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
+                          color: dark,
+                          letterSpacing: -1,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Container(
+                    height: 310,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [lavender, pink, peach],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(40),
+                    ),
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Positioned(
+                          top: 20,
+                          right: 20,
+                          child: Icon(
+                            Icons.auto_awesome,
+                            color: purple.withOpacity(0.35),
+                            size: 55,
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 20,
+                          left: 20,
+                          child: Icon(
+                            Icons.favorite,
+                            color: Colors.white.withOpacity(0.8),
+                            size: 50,
+                          ),
+                        ),
+                        const Icon(
+                          Icons.checkroom_rounded,
+                          color: purple,
+                          size: 155,
+                        ),
+                        Positioned(
+                          bottom: 25,
+                          right: 25,
+                          child: Container(
+                            padding: const EdgeInsets.all(13),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(
+                                  Icons.auto_awesome,
+                                  color: purple,
+                                  size: 18,
+                                ),
+                                SizedBox(width: 7),
+                                Text(
+                                  'AI Perfect Fit',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: dark,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  const Text(
+                    'Your style.\nYour perfect fit.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 39,
+                      fontWeight: FontWeight.w900,
+                      color: dark,
+                      height: 1.13,
+                      letterSpacing: -1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  const Text(
+                    'Discover beautiful outfits, get smart measurements, '
+                    'and connect with skilled tailors who bring your '
+                    'fashion dreams to life.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: muted,
+                      height: 1.7,
+                    ),
+                  ),
+                  const Spacer(),
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SignUpPage(),
+                          ),
+                        );
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: purple,
+                        padding: const EdgeInsets.symmetric(vertical: 18),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                      child: const Text(
+                        'Get Started',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const LoginPage(),
+                          ),
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: purple,
+                        padding: const EdgeInsets.symmetric(vertical: 17),
+                        side: const BorderSide(color: purple),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                      ),
+                      child: const Text(
+                        'I already have an account',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 15),
+                  const Text(
+                    'Made for your style. Built for your fit.',
+                    style: TextStyle(color: muted, fontSize: 10),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// LOGIN PAGE
+// ============================================================
+
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final email = TextEditingController();
+  final password = TextEditingController();
+  bool showPassword = false;
+
+  @override
+  void dispose() {
+    email.dispose();
+    password.dispose();
+    super.dispose();
+  }
+
+  void login() {
+    if (email.text.trim().isEmpty || password.text.isEmpty) {
+      message(context, 'Please enter your email and password.');
+      return;
+    }
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const MainScreen()),
+      (_) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AuthLayout(
+      title: 'Welcome back',
+      subtitle: 'Sign in to continue your style journey.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const AuthLabel('Email address'),
+          AuthField(
+            controller: email,
+            hint: 'you@example.com',
+            icon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
+          ),
+          const SizedBox(height: 18),
+          const AuthLabel('Password'),
+          TextField(
+            controller: password,
+            obscureText: !showPassword,
+            decoration: InputDecoration(
+              hintText: 'Enter your password',
+              prefixIcon: const Icon(Icons.lock_outline),
+              suffixIcon: IconButton(
+                onPressed: () {
+                  setState(() => showPassword = !showPassword);
+                },
+                icon: Icon(
+                  showPassword
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                ),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ForgotPasswordPage(),
+                  ),
+                );
+              },
+              child: const Text(
+                'Forgot password?',
+                style: TextStyle(
+                  color: purple,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 15),
+          PrimaryButton(text: 'Sign In', onPressed: login),
+          const SizedBox(height: 20),
+          AuthDivider(),
+          const SizedBox(height: 20),
+          SocialButton(
+            text: 'Continue with Google',
+            icon: Icons.g_mobiledata,
+            onPressed: () => message(context, 'Google sign-in integration required.'),
+          ),
+          const SizedBox(height: 25),
+          Center(
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              children: [
+                const Text(
+                  "Don't have an account? ",
+                  style: TextStyle(color: muted),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SignUpPage(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Sign Up',
+                    style: TextStyle(
+                      color: purple,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// SIGN UP PAGE
+// ============================================================
+
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
+
+  @override
+  State<SignUpPage> createState() => _SignUpPageState();
+}
+
+class _SignUpPageState extends State<SignUpPage> {
+  final name = TextEditingController();
+  final email = TextEditingController();
+  final password = TextEditingController();
+  bool accepted = false;
+  bool showPassword = false;
+
+  @override
+  void dispose() {
+    name.dispose();
+    email.dispose();
+    password.dispose();
+    super.dispose();
+  }
+
+  void register() {
+    if (name.text.trim().isEmpty ||
+        email.text.trim().isEmpty ||
+        password.text.length < 6) {
+      message(context, 'Enter your details. Password must be at least 6 characters.');
+      return;
+    }
+
+    if (!accepted) {
+      message(context, 'Please accept the terms to continue.');
+      return;
+    }
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (_) => const MainScreen()),
+      (_) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AuthLayout(
+      title: 'Create your account',
+      subtitle: 'Start discovering your personal style.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const AuthLabel('Full name'),
+          AuthField(
+            controller: name,
+            hint: 'Your name',
+            icon: Icons.person_outline,
+          ),
+          const SizedBox(height: 16),
+          const AuthLabel('Email address'),
+          AuthField(
+            controller: email,
+            hint: 'you@example.com',
+            icon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
+          ),
+          const SizedBox(height: 16),
+          const AuthLabel('Password'),
+          TextField(
+            controller: password,
+            obscureText: !showPassword,
+            decoration: InputDecoration(
+              hintText: 'Create a password',
+              prefixIcon: const Icon(Icons.lock_outline),
+              suffixIcon: IconButton(
+                onPressed: () {
+                  setState(() => showPassword = !showPassword);
+                },
+                icon: Icon(
+                  showPassword
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                ),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          CheckboxListTile(
+            value: accepted,
+            onChanged: (value) {
+              setState(() => accepted = value ?? false);
+            },
+            contentPadding: EdgeInsets.zero,
+            activeColor: purple,
+            title: const Text(
+              'I agree to the Terms and Privacy Policy.',
+              style: TextStyle(fontSize: 11, color: muted),
+            ),
+            controlAffinity: ListTileControlAffinity.leading,
+          ),
+          const SizedBox(height: 15),
+          PrimaryButton(text: 'Create Account', onPressed: register),
+          const SizedBox(height: 25),
+          Center(
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              children: [
+                const Text(
+                  'Already have an account? ',
+                  style: TextStyle(color: muted),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const LoginPage(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Sign In',
+                    style: TextStyle(
+                      color: purple,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// FORGOT PASSWORD PAGE
+// ============================================================
+
+class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
+
+  @override
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+}
+
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  final email = TextEditingController();
+
+  @override
+  void dispose() {
+    email.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AuthLayout(
+      title: 'Forgot password?',
+      subtitle: 'Enter your email address to reset your password.',
+      child: Column(
+        children: [
+          AuthField(
+            controller: email,
+            hint: 'you@example.com',
+            icon: Icons.email_outlined,
+            keyboardType: TextInputType.emailAddress,
+          ),
+          const SizedBox(height: 20),
+          PrimaryButton(
+            text: 'Send Reset Link',
+            onPressed: () {
+              if (email.text.trim().isEmpty) {
+                message(context, 'Enter your email address.');
+              } else {
+                message(context, 'Password reset integration required.');
+              }
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// AUTH UI COMPONENTS
+// ============================================================
+
+class AuthLayout extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final Widget child;
+
+  const AuthLayout({
+    super.key,
+    required this.title,
+    required this.subtitle,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 15, 24, 30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.arrow_back_rounded),
+                style: IconButton.styleFrom(
+                  backgroundColor: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 30),
+              Container(
+                height: 55,
+                width: 55,
+                decoration: BoxDecoration(
+                  color: lavender,
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                child: const Icon(
+                  Icons.checkroom_rounded,
+                  color: purple,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: dark,
+                  fontSize: 29,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -1,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  color: muted,
+                  fontSize: 13,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 30),
+              child,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AuthLabel extends StatelessWidget {
+  final String text;
+
+  const AuthLabel(this.text, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: dark,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+class AuthField extends StatelessWidget {
+  final TextEditingController controller;
+  final String hint;
+  final IconData icon;
+  final TextInputType keyboardType;
+
+  const AuthField({
+    super.key,
+    required this.controller,
+    required this.hint,
+    required this.icon,
+    this.keyboardType = TextInputType.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      controller: controller,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        hintText: hint,
+        prefixIcon: Icon(icon),
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+}
+
+class PrimaryButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+
+  const PrimaryButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: FilledButton(
+        onPressed: onPressed,
+        style: FilledButton.styleFrom(
+          backgroundColor: purple,
+          padding: const EdgeInsets.symmetric(vertical: 17),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 14,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AuthDivider extends StatelessWidget {
+  const AuthDivider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      children: [
+        Expanded(child: Divider(color: Color(0xFFE7E2ED))),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          child: Text(
+            'OR',
+            style: TextStyle(color: muted, fontSize: 10),
+          ),
+        ),
+        Expanded(child: Divider(color: Color(0xFFE7E2ED))),
+      ],
+    );
+  }
+}
+
+class SocialButton extends StatelessWidget {
+  final String text;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const SocialButton({
+    super.key,
+    required this.text,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, color: dark),
+        label: Text(
+          text,
+          style: const TextStyle(
+            color: dark,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        style: OutlinedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 15),
+          side: const BorderSide(color: Color(0xFFE7E2ED)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// MAIN APP
+// ============================================================
+
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen> {
+  int tab = 0;
+  String category = 'For You';
+  final Set<String> favorites = {};
+
+  void toast(String text) => message(context, text);
+
+  void toggleFavorite(String name) {
+    setState(() {
+      if (favorites.contains(name)) {
+        favorites.remove(name);
+      } else {
+        favorites.add(name);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pages = [
+      homePage(),
+      const MeasurementPage(),
+      discoveryPage(),
+      profilePage(),
+    ];
+
+    return Scaffold(
+      body: SafeArea(
+        child: IndexedStack(
+          index: tab,
+          children: pages,
+        ),
+      ),
+      bottomNavigationBar: NavigationBar(
+        height: 72,
+        backgroundColor: Colors.white,
+        indicatorColor: lavender,
+        selectedIndex: tab,
+        onDestinationSelected: (i) {
+          setState(() => tab = i);
+        },
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home, color: purple),
+            label: 'Home',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.straighten_outlined),
+            selectedIcon: Icon(Icons.straighten, color: purple),
+            label: 'Fit Studio',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.search_outlined),
+            selectedIcon: Icon(Icons.search, color: purple),
+            label: 'Discover',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person, color: purple),
+            label: 'Profile',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget homePage() {
+    final filtered = category == 'For You'
+        ? outfits
+        : outfits.where((o) => o.category == category).toList();
+
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        SliverToBoxAdapter(child: appHeader()),
+        SliverToBoxAdapter(child: homeHero()),
+        SliverToBoxAdapter(child: fitBanner()),
+        SliverToBoxAdapter(child: categoryList()),
+        SliverToBoxAdapter(child: sectionHeader()),
+        SliverToBoxAdapter(
+          child: MasonryFeed(
+            outfits: filtered,
+            favorites: favorites,
+            onFavorite: toggleFavorite,
+            onTap: outfitDetail,
+          ),
+        ),
+        SliverToBoxAdapter(child: tailorBanner()),
+        const SliverToBoxAdapter(child: SizedBox(height: 25)),
+      ],
+    );
+  }
+
+  Widget appHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 15, 20, 18),
+      child: Row(
+        children: [
+          Container(
+            height: 44,
+            width: 44,
+            decoration: BoxDecoration(
+              color: purple,
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: const Icon(Icons.checkroom, color: Colors.white),
+          ),
+          const SizedBox(width: 10),
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'TrueFit AI',
+                style: TextStyle(
+                  color: dark,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+              Text(
+                'Your style. Your perfect fit.',
+                style: TextStyle(color: muted, fontSize: 10),
+              ),
+            ],
+          ),
+          const Spacer(),
+          IconButton(
+            onPressed: () => toast('Notifications coming soon'),
+            icon: const Icon(Icons.notifications_none),
+          ),
+          CircleAvatar(
+            backgroundColor: pink,
+            child: const Icon(Icons.person, color: purple),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget homeHero() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF302440), Color(0xFF7853D9)],
+          ),
+          borderRadius: BorderRadius.circular(28),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '✦ SMART TAILORING',
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1,
+              ),
+            ),
+            const SizedBox(height: 18),
+            const Text(
+              'Your perfect fit.\nYour own style.',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 31,
+                height: 1.2,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Discover designs, build your fit profile, '
+              'and find a tailor.',
+              style: TextStyle(color: Colors.white70, fontSize: 12),
+            ),
+            const SizedBox(height: 20),
+            FilledButton(
+              onPressed: () => setState(() => tab = 1),
+              style: FilledButton.styleFrom(
+                backgroundColor: Colors.white,
+                foregroundColor: purple,
+              ),
+              child: const Text('Create My Fit Profile'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget fitBanner() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(18, 17, 18, 5),
+      child: Container(
+        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: lavender,
+          borderRadius: BorderRadius.circular(21),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.auto_awesome, color: purple, size: 30),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'AI Measurement Studio',
+                    style: TextStyle(
+                      color: dark,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    'Build your personalized fit profile.',
+                    style: TextStyle(color: muted, fontSize: 10),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: () => setState(() => tab = 1),
+              icon: const Icon(Icons.arrow_forward, color: purple),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget categoryList() {
+    final list = ['For You', 'Ankara', 'Traditional', 'Casual', 'Formal'];
+
+    return SizedBox(
+      height: 48,
+      child: ListView.separated(
+        padding: const EdgeInsets.fromLTRB(18, 5, 18, 0),
+        scrollDirection: Axis.horizontal,
+        itemCount: list.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 9),
+        itemBuilder: (context, index) {
+          final item = list[index];
+          final selected = item == category;
+
+          return GestureDetector(
+            onTap: () => setState(() => category = item),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 17),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: selected ? purple : Colors.white,
+                borderRadius: BorderRadius.circular(30),
+              ),
+              child: Text(
+                item,
+                style: TextStyle(
+                  color: selected ? Colors.white : dark,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 11,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget sectionHeader() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 13),
+      child: Row(
+        children: [
+          const Expanded(
+            child: Text(
+              'Find your next look',
+              style: TextStyle(
+                color: dark,
+                fontSize: 22,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          TextButton(
+            onPressed: () => setState(() => tab = 2),
+            child: const Text(
+              'Explore all',
+              style: TextStyle(color: purple),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget tailorBanner() {
+    return Padding(
+      padding: const EdgeInsets.all(18),
+      child: Container(
+        padding: const EdgeInsets.all(22),
+        decoration: BoxDecoration(
+          color: mint,
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.storefront, color: Color(0xFF218B58)),
+            const SizedBox(height: 12),
+            const Text(
+              'Meet your next tailor.',
+              style: TextStyle(
+                color: dark,
+                fontWeight: FontWeight.w900,
+                fontSize: 23,
+              ),
+            ),
+            const SizedBox(height: 10),
+            const Text(
+              'Discover skilled designers and bring your ideas to life.',
+              style: TextStyle(color: muted, fontSize: 12),
+            ),
+            const SizedBox(height: 15),
+            FilledButton(
+              onPressed: () => setState(() => tab = 2),
+              style: FilledButton.styleFrom(
+                backgroundColor: const Color(0xFF218B58),
+              ),
+              child: const Text('Discover Tailors'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void outfitDetail(Outfit outfit) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => Container(
+        padding: const EdgeInsets.all(22),
+        decoration: const BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 210,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: outfit.color,
+                borderRadius: BorderRadius.circular(25),
+              ),
+              child: Icon(outfit.icon, size: 100, color: purple),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              outfit.name,
+              style: const TextStyle(
+                color: dark,
+                fontSize: 25,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+            const SizedBox(height: 7),
+            Text(
+              outfit.price,
+              style: const TextStyle(
+                color: purple,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 15),
+            const Text(
+              'Save this inspiration or find a tailor to create your custom outfit.',
+              style: TextStyle(color: muted),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: () {
+                      toggleFavorite(outfit.name);
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Save Look'),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      setState(() => tab = 2);
+                    },
+                    child: const Text('Find a Tailor'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // DISCOVERY
+
+  Widget discoveryPage() {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Discover Tailors',
+                  style: TextStyle(
+                    color: dark,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Find skilled designers and custom fashion.',
+                  style: TextStyle(color: muted, fontSize: 12),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search tailors or styles...',
+                    prefixIcon: const Icon(Icons.search, color: purple),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(17),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                tailorCard('Aisha Couture', 'Abuja, Nigeria', 'Traditional & Ankara', 4.9, peach),
+                tailorCard('The Stitch House', 'Lagos, Nigeria', 'Formal & Casual', 4.8, lavender),
+                tailorCard('Royal Threads', 'Port Harcourt, Nigeria', 'Luxury Tailoring', 4.7, mint),
+                const SizedBox(height: 20),
+                const Text(
+                  'How it works',
+                  style: TextStyle(color: dark, fontSize: 22, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 15),
+                step('01', 'Choose a design', 'Save a style you love.'),
+                step('02', 'Share your fit profile', 'Use your saved measurements.'),
+                step('03', 'Choose a tailor', 'Find a designer for your garment.'),
+                step('04', 'Track your order', 'Follow the tailoring process.'),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget tailorCard(String name, String location, String specialty, double rating, Color color) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(21),
+      ),
+      child: Row(
+        children: [
+          Container(
+            height: 65,
+            width: 65,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(17),
+            ),
+            child: const Icon(Icons.person, color: purple, size: 35),
+          ),
+          const SizedBox(width: 13),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: const TextStyle(color: dark, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 5),
+                Text(location, style: const TextStyle(color: muted, fontSize: 10)),
+                const SizedBox(height: 5),
+                Text(specialty, style: const TextStyle(color: purple, fontSize: 10)),
+              ],
+            ),
+          ),
+          Column(
+            children: [
+              const Icon(Icons.star_rounded, color: Colors.orange),
+              Text(rating.toString(), style: const TextStyle(color: dark, fontWeight: FontWeight.bold)),
+              IconButton(
+                onPressed: () => toast('Tailor profile integration coming soon'),
+                icon: const Icon(Icons.arrow_forward_ios, size: 14),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget step(String number, String title, String subtitle) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(15),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: lavender,
+            child: Text(number, style: const TextStyle(color: purple, fontWeight: FontWeight.bold)),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: const TextStyle(color: dark, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text(subtitle, style: const TextStyle(color: muted, fontSize: 11)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // PROFILE + SAVED DESIGNS + ORDERS
+
+  Widget profilePage() {
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const SizedBox(height: 20),
+        const CircleAvatar(
+          radius: 45,
+          backgroundColor: pink,
+          child: Icon(Icons.person, size: 50, color: purple),
+        ),
+        const SizedBox(height: 15),
+        const Center(
+          child: Text(
+            'My Profile',
+            style: TextStyle(color: dark, fontSize: 26, fontWeight: FontWeight.w900),
+          ),
+        ),
+        const SizedBox(height: 7),
+        const Center(
+          child: Text('Your personal fashion space.', style: TextStyle(color: muted, fontSize: 12)),
+        ),
+        const SizedBox(height: 25),
+        profileOption(Icons.favorite_border, 'Saved Looks', '${favorites.length} saved designs', savedPage),
+        profileOption(Icons.straighten, 'My Measurements', 'Manage your fit profile', () => setState(() => tab = 1)),
+        profileOption(Icons.shopping_bag_outlined, 'My Orders', 'Track your custom orders', ordersPage),
+        profileOption(Icons.storefront_outlined, 'My Tailors', 'Your favorite designers', () => setState(() => tab = 2)),
+        profileOption(Icons.settings_outlined, 'Settings & Privacy', 'Manage your account', settingsPage),
+        profileOption(Icons.help_outline, 'Help & Support', 'Get assistance', () => toast('Support integration coming soon')),
+        profileOption(Icons.logout, 'Sign Out', 'Return to welcome page', () {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const WelcomePage()),
+            (_) => false,
+          );
+        }),
+      ],
+    );
+  }
+
+  Widget profileOption(IconData icon, String title, String subtitle, VoidCallback onTap) {
+    return ListTile(
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(vertical: 7),
+      leading: Container(
+        height: 45,
+        width: 45,
+        decoration: BoxDecoration(
+          color: lavender,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Icon(icon, color: purple),
+      ),
+      title: Text(title, style: const TextStyle(color: dark, fontWeight: FontWeight.bold)),
+      subtitle: Text(subtitle, style: const TextStyle(color: muted, fontSize: 11)),
+      trailing: const Icon(Icons.chevron_right, color: muted),
+    );
+  }
+
+  void savedPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SavedPage(
+          favorites: favorites,
+          onTap: outfitDetail,
+          onRemove: toggleFavorite,
+        ),
+      ),
+    );
+  }
+
+  void ordersPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const OrdersPage()),
+    );
+  }
+
+  void settingsPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SettingsPage()),
+    );
+  }
+}
+
+// ============================================================
+// PINTEREST-STYLE MASONRY FEED
+// ============================================================
+
+class MasonryFeed extends StatelessWidget {
+  final List<Outfit> outfits;
+  final Set<String> favorites;
+  final Function(String) onFavorite;
+  final Function(Outfit) onTap;
+
+  const MasonryFeed({
+    super.key,
+    required this.outfits,
+    required this.favorites,
+    required this.onFavorite,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final left = <Outfit>[];
+    final right = <Outfit>[];
+
+    for (int i = 0; i < outfits.length; i++) {
+      if (i.isEven) {
+        left.add(outfits[i]);
+      } else {
+        right.add(outfits[i]);
+      }
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(child: column(left)),
+          const SizedBox(width: 12),
+          Expanded(child: column(right)),
+        ],
+      ),
+    );
+  }
+
+  Widget column(List<Outfit> list) {
+    return Column(
+      children: list.map((outfit) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 13),
+          child: card(outfit),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget card(Outfit outfit) {
+    final saved = favorites.contains(outfit.name);
+
+    return GestureDetector(
+      onTap: () => onTap(outfit),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(23),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(23)),
+              child: Container(
+                height: outfit.height,
+                width: double.infinity,
+                color: outfit.color,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Icon(
+                        outfit.icon,
+                        size: 90,
+                        color: purple.withOpacity(0.38),
+                      ),
+                    ),
+                    Positioned(
+                      top: 10,
+                      right: 10,
+                      child: GestureDetector(
+                        onTap: () => onFavorite(outfit.name),
+                        child: Container(
+                          height: 35,
+                          width: 35,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            saved ? Icons.favorite : Icons.favorite_border,
+                            color: saved ? Colors.redAccent : dark,
+                            size: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 10,
+                      left: 10,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          outfit.category,
+                          style: const TextStyle(color: dark, fontWeight: FontWeight.bold, fontSize: 9),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(11, 11, 11, 13),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(outfit.name, style: const TextStyle(color: dark, fontWeight: FontWeight.bold, fontSize: 13)),
+                  const SizedBox(height: 5),
+                  Text(outfit.price, style: const TextStyle(color: purple, fontWeight: FontWeight.bold, fontSize: 10)),
+                  const SizedBox(height: 8),
+                  const Row(
+                    children: [
+                      Icon(Icons.auto_awesome, size: 12, color: purple),
+                      SizedBox(width: 4),
+                      Text('Made for your style', style: TextStyle(color: muted, fontSize: 9)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ============================================================
+// SAVED DESIGNS PAGE
+// ============================================================
+
+class SavedPage extends StatelessWidget {
+  final Set<String> favorites;
+  final Function(Outfit) onTap;
+  final Function(String) onRemove;
+
+  const SavedPage({
+    super.key,
+    required this.favorites,
+    required this.onTap,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final saved = outfits.where((o) => favorites.contains(o.name)).toList();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Saved Looks', style: TextStyle(fontWeight: FontWeight.w900)),
+        backgroundColor: bg,
+      ),
+      body: saved.isEmpty
+          ? const Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.favorite_border, size: 65, color: purple),
+                  SizedBox(height: 15),
+                  Text('No saved looks yet', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                  SizedBox(height: 7),
+                  Text('Explore and save designs you love.', style: TextStyle(color: muted)),
+                ],
+              ),
+            )
+          : MasonryFeed(
+              outfits: saved,
+              favorites: favorites,
+              onFavorite: onRemove,
+              onTap: onTap,
+            ),
+    );
+  }
+}
+
+// ============================================================
+// ORDERS PAGE
+// ============================================================
+
+class OrdersPage extends StatelessWidget {
+  const OrdersPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Orders', style: TextStyle(fontWeight: FontWeight.w900)),
+        backgroundColor: bg,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Container(
+            padding: const EdgeInsets.all(25),
+            decoration: BoxDecoration(
+              color: lavender,
+              borderRadius: BorderRadius.circular(25),
+            ),
+            child: const Column(
+              children: [
+                Icon(Icons.shopping_bag_outlined, color: purple, size: 55),
+                SizedBox(height: 15),
+                Text(
+                  'Your tailoring orders',
+                  style: TextStyle(color: dark, fontSize: 22, fontWeight: FontWeight.w900),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Your orders will appear here once you book a tailor.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: muted, fontSize: 12),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            'Order journey',
+            style: TextStyle(color: dark, fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+          const SizedBox(height: 15),
+          orderStep('Design selected', 'Choose an outfit inspiration.'),
+          orderStep('Tailor confirmed', 'Your selected tailor accepts the order.'),
+          orderStep('In production', 'Your garment is being made.'),
+          orderStep('Ready for delivery', 'Your custom outfit is ready.'),
+        ],
+      ),
+    );
+  }
+
+  Widget orderStep(String title, String description) {
+    return ListTile(
+      leading: const CircleAvatar(
+        backgroundColor: lavender,
+        child: Icon(Icons.check_circle_outline, color: purple),
+      ),
+      title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, color: dark)),
+      subtitle: Text(description, style: const TextStyle(color: muted, fontSize: 11)),
+    );
+  }
+}
+
+// ============================================================
+// SETTINGS PAGE
+// ============================================================
+
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  bool notifications = true;
+  bool privacy = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings', style: TextStyle(fontWeight: FontWeight.w900)),
+        backgroundColor: bg,
+      ),
+      body: ListView(
+        children: [
+          SwitchListTile(
+            value: notifications,
+            activeColor: purple,
+            title: const Text('Notifications'),
+            subtitle: const Text('Get style and order updates'),
+            onChanged: (v) => setState(() => notifications = v),
+          ),
+          SwitchListTile(
+            value: privacy,
+            activeColor: purple,
+            title: const Text('Measurement privacy'),
+            subtitle: const Text('Keep your fit profile private'),
+            onChanged: (v) => setState(() => privacy = v),
+          ),
+          const ListTile(
+            leading: Icon(Icons.description_outlined, color: purple),
+            title: Text('Terms & Conditions'),
+          ),
+          const ListTile(
+            leading: Icon(Icons.privacy_tip_outlined, color: purple),
+            title: Text('Privacy Policy'),
+          ),
+          const ListTile(
+            leading: Icon(Icons.help_outline, color: purple),
+            title: Text('Help & Support'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ============================================================
+// MEASUREMENT STUDIO
+// ============================================================
+
+class MeasurementPage extends StatefulWidget {
+  const MeasurementPage({super.key});
+
+  @override
+  State<MeasurementPage> createState() => _MeasurementPageState();
+}
+
+class _MeasurementPageState extends State<MeasurementPage> {
+  final Map<String, double> values = {
+    'Chest': 96,
+    'Waist': 82,
+    'Hip': 100,
+    'Shoulder': 42,
+    'Sleeve': 60,
+    'Inseam': 78,
+  };
+
+  bool metric = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 25, 20, 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Fit Studio ✨',
+                  style: TextStyle(color: dark, fontSize: 28, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 7),
+                const Text('Your measurements. Your perfect fit.', style: TextStyle(color: muted, fontSize: 12)),
+                const SizedBox(height: 23),
+                Container(
+                  padding: const EdgeInsets.all(23),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(colors: [Color(0xFF302440), purple]),
+                    borderRadius: BorderRadius.circular(27),
+                  ),
+                  child: Column(
+                    children: [
+                      const Icon(Icons.camera_alt_rounded, size: 48, color: Colors.white),
+                      const SizedBox(height: 15),
+                      const Text(
+                        'AI Body Measurement',
+                        style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Guided camera capture can estimate garment measurements. '
+                        'Review estimates before saving.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: Colors.white70, fontSize: 11, height: 1.6),
+                      ),
+                      const SizedBox(height: 20),
+                      FilledButton(
+                        onPressed: () => message(context, 'AI camera integration required.'),
+                        style: FilledButton.styleFrom(backgroundColor: Colors.white, foregroundColor: purple),
+                        child: const Text('Start AI Scan'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 25),
+                Row(
+                  children: [
+                    const Expanded(
+                      child: Text(
+                        'Manual Fit Profile',
+                        style: TextStyle(color: dark, fontWeight: FontWeight.w900, fontSize: 21),
+                      ),
+                    ),
+                    SegmentedButton<bool>(
+                      segments: const [
+                        ButtonSegment(value: true, label: Text('cm')),
+                        ButtonSegment(value: false, label: Text('in')),
+                      ],
+                      selected: {metric},
+                      onSelectionChanged: (v) => setState(() => metric = v.first),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Sample values. Replace them with measurements you enter.',
+                  style: TextStyle(color: muted, fontSize: 11),
+                ),
+              ],
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          sliver: SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final name = values.keys.elementAt(index);
+                final value = values[name]!;
+                final display = metric ? value : value / 2.54;
+
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Text(name, style: const TextStyle(color: dark, fontWeight: FontWeight.bold)),
+                          const Spacer(),
+                          Text(
+                            '${display.toStringAsFixed(1)} ${metric ? "cm" : "in"}',
+                            style: const TextStyle(color: purple, fontWeight: FontWeight.w900),
+                          ),
+                        ],
+                      ),
+                      Slider(
+                        value: value,
+                        min: 20,
+                        max: 150,
+                        activeColor: purple,
+                        onChanged: (v) => setState(() => values[name] = v),
+                      ),
+                    ],
+                  ),
+                );
+              },
+              childCount: values.length,
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+            child: PrimaryButton(
+              text: 'Save My Fit Profile',
+              onPressed: () => message(context, 'Profile saved in this demo session.'),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ============================================================
+// GLOBAL MESSAGE
+// ============================================================
+
+void message(BuildContext context, String text) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(text),
+      backgroundColor: dark,
+      behavior: SnackBarBehavior.floating,
+    ),
+  );
+}
+
+```
+
+## Run the app
+
+```
+flutter create truefit_ai
+cd truefit_ai
+```
+
+Replace the entire contents of `lib/main.dart` with the code above, then:
+
+```
+flutter run
+```
+
+### Important
+
+This is a single-file mobile UI prototype. The following still need real integrations:
+
+- Firebase authentication or another auth provider
+- AI photo-based measurement service
+- Database for user profiles and saved designs
+- Real tailor profiles and verification
+- Appointment booking and order management
+- Payment gateway
+- Real fashion photography
+
+The sample tailors, prices, and measurements are placeholders, not verified marketplace listings.

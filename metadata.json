@@ -1,0 +1,6 @@
+{
+  "name": "TrueFit AI",
+  "description": "Discover custom fashion looks, generate smart body measurements with AI Fit Studio, and connect with bespoke tailors.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,109 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-atelier-bg: #FAF8FC;
+  --color-atelier-ink: #211D2B;
+  --color-atelier-muted: #6E687B;
+  --color-atelier-purple: #7654E8;
+  --color-atelier-lavender: #EAE3FF;
+  --color-atelier-peach: #FFE9D9;
+  --color-atelier-mint: #DDF5E8;
+  --color-atelier-pink: #FFE4EF;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, .font-display {
+    font-family: var(--font-display);
+  }
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* White side scrollbar */
+html {
+  scrollbar-color: #FFFFFF #FAF8FC;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FAF8FC;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FFFFFF;
+  border-radius: 9999px;
+  border: 1px solid rgba(33, 29, 43, 0.18);
+  box-shadow: 0 1px 3px rgba(33, 29, 43, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #FFFFFF;
+  border-color: rgba(118, 84, 232, 0.45);
+}
+
+/* White measurement range sliders */
+input[type="range"].atelier-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 9999px;
+  background: #FFFFFF;
+  border: 1px solid rgba(33, 29, 43, 0.18);
+  outline: none;
+}
+
+input[type="range"].atelier-slider::-webkit-slider-runnable-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: #FFFFFF;
+}
+
+input[type="range"].atelier-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  margin-top: -8px;
+  border-radius: 9999px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(33, 29, 43, 0.25);
+  box-shadow: 0 2px 8px rgba(33, 29, 43, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+input[type="range"].atelier-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  border-color: #7654E8;
+}
+
+input[type="range"].atelier-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 9999px;
+  background: #FFFFFF;
+  border: 1px solid rgba(33, 29, 43, 0.18);
+}
+
+input[type="range"].atelier-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 9999px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(33, 29, 43, 0.25);
+  box-shadow: 0 2px 8px rgba(33, 29, 43, 0.2);
+  cursor: pointer;
+}
