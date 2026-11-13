@@ -169,7 +169,7 @@ class UserAccount {
 const heroImage = 'assets/images/hero_atelier_studio.jpg';
 
 const houseAtelier = Atelier(
-  id: 'aisha-couture', name: 'Aisha Couture', location: 'Abuja, Nigeria',
+  id: 'ifeoma-couture', name: 'Ifeoma Couture', location: 'Abuja, Nigeria',
   specialty: 'Bespoke Ankara, Traditional & Contemporary Tailoring', rating: 4.9, completedCount: 340, turnaround: '7–14 days',
   tint: 0xFFFFE9D9, startingPrice: 'From ₦18,000',
   bio: 'Private bespoke tailoring studio specializing in precision-cut Ankara silhouettes, contemporary Agbada ensembles, fluid silk boubous, and made-to-measure suiting.',

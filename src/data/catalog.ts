@@ -23,8 +23,8 @@ export const DEFAULT_FIT_PROFILE: FitProfile = {
 };
 
 export const HOUSE_ATELIER: AtelierProfile = {
-  id: "aisha-couture",
-  name: "Aisha Couture",
+  id: "ifeoma-couture",
+  name: "Ifeoma Couture",
   location: "Abuja, Nigeria",
   specialty: "Bespoke Ankara, Traditional & Contemporary Tailoring",
   rating: 4.9,
