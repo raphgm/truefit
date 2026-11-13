@@ -237,7 +237,7 @@ class _InfoSheetState extends State<_InfoSheet> {
         ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.shield_outlined), title: const Text('Privacy Policy'), onTap: () => setState(() => view = 'privacy')),
       ],
       if (view == 'terms') ...[
-        const Text('TrueFit AI provides style inspiration, AI-assisted measurement estimates, and custom fitting workflows for the studio.'),
+        const Text('TrueFit Studio provides style inspiration, AI-assisted measurement estimates, and custom fitting workflows for the studio.'),
         const SizedBox(height: 8),
         const Text('Always review AI-generated measurements against a physical tape measure before final cutting on bespoke commissions.'),
         back(),

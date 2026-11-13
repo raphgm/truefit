@@ -93,7 +93,7 @@ class LookbookGrid extends StatelessWidget {
         const SizedBox(height: 10),
         Text('No looks match this category', style: display(17)),
         const SizedBox(height: 4),
-        const Text('Select "For You" to browse the full TrueFit AI lookbook.', textAlign: TextAlign.center, style: TextStyle(color: muted)),
+        const Text('Select "For You" to browse the full TrueFit Studio lookbook.', textAlign: TextAlign.center, style: TextStyle(color: muted)),
       ]));
     }
     final left = [for (var i = 0; i < items.length; i += 2) items[i]];

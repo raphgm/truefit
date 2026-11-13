@@ -1,4 +1,4 @@
-// TrueFit AI data types and studio catalog (ported from src/types.ts and src/data/catalog.ts).
+// TrueFit Studio data types and studio catalog (ported from src/types.ts and src/data/catalog.ts).
 import 'dart:convert';
 import 'dart:typed_data';
 

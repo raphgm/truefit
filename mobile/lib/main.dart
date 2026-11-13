@@ -22,7 +22,7 @@ class TrueFitApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final rounded = RoundedRectangleBorder(borderRadius: BorderRadius.circular(14));
     return MaterialApp(
-      title: 'TrueFit AI',
+      title: 'TrueFit Studio',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -108,7 +108,7 @@ class _RootState extends State<Root> {
           leading: const {AppTab.saved, AppTab.orders, AppTab.tailorDesk}.contains(s.tab) ? BackButton(onPressed: () => s.go(AppTab.profile)) : null,
           title: GestureDetector(onTap: () => s.go(AppTab.home), child: const Row(mainAxisSize: MainAxisSize.min, children: [
             Icon(Icons.checkroom, color: purple), SizedBox(width: 8),
-            Text('TrueFit AI', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: -0.3)),
+            Text('TrueFit Studio', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: -0.3)),
           ])),
           actions: [
             IconButton(tooltip: 'Saved looks', onPressed: () => s.go(AppTab.saved),
