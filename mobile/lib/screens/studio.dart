@@ -45,10 +45,20 @@ class _StudioScreenState extends State<StudioScreen> {
     _extract();
   }
 
+  /// The phone's own camera (works on every phone and browser). Falls back to the gallery on a computer.
+  Future<Uint8List?> _devicePhoto() async {
+    try {
+      final x = await ImagePicker().pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.rear, maxWidth: 1600, imageQuality: 88);
+      return x == null ? null : await x.readAsBytes();
+    } catch (_) {
+      if (mounted) AppScope.of(context).notify('The camera could not open, so choose a photo instead.');
+      return _pick();
+    }
+  }
+
   Future<void> _phoneCameraFront() async {
-    final x = await ImagePicker().pickImage(source: ImageSource.camera, preferredCameraDevice: CameraDevice.front, maxWidth: 1600, imageQuality: 88);
-    if (x == null) return;
-    final b = await x.readAsBytes();
+    final b = await _devicePhoto();
+    if (b == null || !mounted) return;
     setState(() => front = b);
     _extract();
   }
@@ -61,9 +71,7 @@ class _StudioScreenState extends State<StudioScreen> {
   }
 
   Future<void> _addSide({bool camera = false}) async {
-    final b = camera
-        ? await Navigator.push<Uint8List>(context, MaterialPageRoute(builder: (_) => CaptureScreen(seconds: delay, side: true)))
-        : await _pick();
+    final b = camera ? await _devicePhoto() : await _pick();
     if (b == null || !mounted) return;
     setState(() => side = b);
     if (front != null) {
@@ -149,7 +157,7 @@ class _StudioScreenState extends State<StudioScreen> {
             Expanded(child: Text('AI Photo Scan (${p.label})', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16))),
           ]),
           const SizedBox(height: 4),
-          Text('Auto-captures after the timer · Optional side photo for depth accuracy', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12)),
+          Text('Front photo, plus an optional side photo for depth accuracy', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12)),
           const SizedBox(height: 14),
           Row(children: [
             Expanded(child: _darkField(TextField(
@@ -169,20 +177,24 @@ class _StudioScreenState extends State<StudioScreen> {
           _label('Preferred drape'),
           _pills(const ['Tailored', 'Relaxed', 'Structured'], p.fitPreference, (v) { p.fitPreference = v; s.changed(); }),
           const SizedBox(height: 12),
-          _label('Self-timer before auto-capture'),
+          _label('Self-timer (live auto-scan only)'),
           _pills(const ['5 seconds', '8 seconds', '12 seconds'], '$delay seconds', (v) => setState(() => delay = int.parse(v.split(' ').first))),
           const SizedBox(height: 16),
           if (front == null) ...[
+            Text('Ask someone to photograph you from head to feet, facing the camera, in fitted clothes and good light.',
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12.5, height: 1.4)),
+            const SizedBox(height: 12),
             FilledButton.icon(style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(54), backgroundColor: Colors.white, foregroundColor: purple),
-                onPressed: _scan, icon: const Icon(Icons.photo_camera), label: const Text('Start Automatic AI Scan')),
-            const SizedBox(height: 8),
-            _darkButton(Icons.add_a_photo_outlined, 'Take photo with phone camera', _phoneCameraFront),
+                onPressed: _phoneCameraFront, icon: const Icon(Icons.photo_camera), label: const Text('Take front photo')),
             const SizedBox(height: 8),
             Row(children: [
-              Expanded(child: _darkButton(Icons.upload, 'Upload Front', _uploadFront)),
+              Expanded(child: _darkButton(Icons.photo_library_outlined, 'From gallery', _uploadFront)),
               const SizedBox(width: 8),
-              Expanded(child: _darkButton(Icons.upload, side != null ? 'Side Ready' : 'Add Side Photo', () => _addSide())),
+              Expanded(child: _darkButton(Icons.add_a_photo_outlined, side != null ? 'Side ready' : 'Side photo', _sideChoice)),
             ]),
+            const SizedBox(height: 4),
+            Center(child: TextButton.icon(onPressed: _scan, icon: const Icon(Icons.timer_outlined, size: 16, color: Colors.white70),
+                label: const Text('Live auto-scan with timer (beta)', style: TextStyle(color: Colors.white70)))),
           ] else ...[
             Row(children: [
               Expanded(child: _thumb(front!, 'Front', analyzing ? null : () => setState(() => front = null))),
@@ -204,9 +216,9 @@ class _StudioScreenState extends State<StudioScreen> {
             ])),
             const SizedBox(height: 12),
             Row(children: [
-              Expanded(child: _darkButton(Icons.photo_camera, 'Retake Auto Scan', analyzing ? null : _scan)),
+              Expanded(child: _darkButton(Icons.photo_camera, 'Retake front', analyzing ? null : _phoneCameraFront)),
               const SizedBox(width: 8),
-              Expanded(child: _darkButton(Icons.upload, 'Replace Front', analyzing ? null : _uploadFront)),
+              Expanded(child: _darkButton(Icons.photo_library_outlined, 'From gallery', analyzing ? null : _uploadFront)),
             ]),
           ],
           if (a != null) ...[
