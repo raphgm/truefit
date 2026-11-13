@@ -148,107 +148,70 @@ class _StudioScreenState extends State<StudioScreen> {
         ])),
       ]))),
       const SizedBox(height: 14),
-      // Scan
-      Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(color: dark, borderRadius: BorderRadius.circular(24)),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Row(children: [
-            const Icon(Icons.photo_camera, color: lavender),
-            const SizedBox(width: 10),
-            Expanded(child: Text('AI Photo Scan (${p.label})', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 16))),
-          ]),
-          const SizedBox(height: 4),
-          Text('Front photo, plus an optional side photo for depth accuracy', style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 12)),
-          const SizedBox(height: 14),
-          Row(children: [
-            Expanded(child: _darkField(TextField(
-              controller: height, keyboardType: TextInputType.number, style: const TextStyle(color: Colors.white),
-              decoration: _darkInput('Height anchor (cm)'),
-              onChanged: (v) { final n = double.tryParse(v); if (n != null && n >= 140 && n <= 215) { p.heightCm = n; s.changed(); } },
-            ))),
-            const SizedBox(width: 10),
-            Expanded(child: _darkField(DropdownButtonFormField<String>(
-              initialValue: garment, dropdownColor: dark, style: const TextStyle(color: Colors.white), isExpanded: true,
-              decoration: _darkInput('Garment style'),
-              items: [for (final g in const ['Ankara / Couture', 'Modern Agbada', 'Classic Suit', 'Casual Co-ord']) DropdownMenuItem(value: g, child: Text(g))],
-              onChanged: (v) => setState(() => garment = v!),
-            ))),
-          ]),
-          const SizedBox(height: 14),
-          _label('Preferred drape'),
-          _pills(const ['Tailored', 'Relaxed', 'Structured'], p.fitPreference, (v) { p.fitPreference = v; s.changed(); }),
-          const SizedBox(height: 12),
-          _label('Self-timer (live auto-scan only)'),
-          _pills(const ['5 seconds', '8 seconds', '12 seconds'], '$delay seconds', (v) => setState(() => delay = int.parse(v.split(' ').first))),
-          const SizedBox(height: 16),
-          if (front == null) ...[
-            Text('Ask someone to photograph you from head to feet, facing the camera, in fitted clothes and good light.',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12.5, height: 1.4)),
-            const SizedBox(height: 12),
-            FilledButton.icon(style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(54), backgroundColor: Colors.white, foregroundColor: purple),
-                onPressed: _phoneCameraFront, icon: const Icon(Icons.photo_camera), label: const Text('Take front photo')),
-            const SizedBox(height: 8),
-            Row(children: [
-              Expanded(child: _darkButton(Icons.photo_library_outlined, 'From gallery', _uploadFront)),
-              const SizedBox(width: 8),
-              Expanded(child: _darkButton(Icons.add_a_photo_outlined, side != null ? 'Side ready' : 'Side photo', _sideChoice)),
-            ]),
-            const SizedBox(height: 4),
-            Center(child: TextButton.icon(onPressed: _scan, icon: const Icon(Icons.timer_outlined, size: 16, color: Colors.white70),
-                label: const Text('Live auto-scan with timer (beta)', style: TextStyle(color: Colors.white70)))),
-          ] else ...[
-            Row(children: [
-              Expanded(child: _thumb(front!, 'Front', analyzing ? null : () => setState(() => front = null))),
-              const SizedBox(width: 10),
-              Expanded(child: side != null
-                  ? _thumb(side!, 'Side', analyzing ? null : () => setState(() => side = null))
-                  : AspectRatio(aspectRatio: 3 / 4, child: Material(
-                      color: Colors.white.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(16),
-                      child: InkWell(borderRadius: BorderRadius.circular(16), onTap: analyzing ? null : () => _sideChoice(), child: const Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                        Icon(Icons.add_a_photo_outlined, color: lavender), SizedBox(height: 6),
-                        Text('Add Side Profile', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
-                        Text('Optional depth scan', style: TextStyle(color: Colors.white54, fontSize: 11)),
-                      ])),
-                    ))),
-            ]),
-            if (analyzing) const Padding(padding: EdgeInsets.only(top: 14), child: Row(children: [
-              SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: lavender)), SizedBox(width: 10),
-              Expanded(child: Text('Extracting body proportions & measurements...', style: TextStyle(color: Colors.white))),
-            ])),
-            const SizedBox(height: 12),
-            Row(children: [
-              Expanded(child: _darkButton(Icons.photo_camera, 'Retake front', analyzing ? null : _phoneCameraFront)),
-              const SizedBox(width: 8),
-              Expanded(child: _darkButton(Icons.photo_library_outlined, 'From gallery', analyzing ? null : _uploadFront)),
-            ]),
-          ],
-          if (a != null) ...[
-            const SizedBox(height: 18),
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.07), borderRadius: BorderRadius.circular(16)),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const Row(children: [Icon(Icons.auto_awesome, color: lavender, size: 18), SizedBox(width: 6),
-                    Text('Extracted Profile Details', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800))]),
-                const SizedBox(height: 10),
-                for (final (k, v) in [('Body build', a.details.bodyBuild), ('Base size', a.details.recommendedBaseSize), ('Shoulder profile', a.details.shoulderProfile),
-                    ('Torso ratio', a.details.torsoProportion), ('Posture', a.details.postureNote), ('Scan quality', a.details.lightingAndFraming)])
-                  Padding(padding: const EdgeInsets.only(bottom: 8), child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                    Text(k.toUpperCase(), style: const TextStyle(color: lavender, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.8)),
-                    Text(v, style: const TextStyle(color: Colors.white, fontSize: 13)),
-                  ])),
-                const Divider(color: Colors.white24),
-                Text(a.silhouetteNote, style: const TextStyle(color: Colors.white, fontSize: 13, height: 1.4)),
-                const SizedBox(height: 6),
-                Text('Ease: ${a.easeRecommendation}', style: const TextStyle(color: Colors.white70, fontSize: 13)),
-                for (final n in a.tailorNotes) Padding(padding: const EdgeInsets.only(top: 4),
-                    child: Text('• $n', style: const TextStyle(color: Colors.white70, fontSize: 12.5))),
-              ]),
-            ),
-          ],
+      // AI photo scan
+      Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: card(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Container(width: 38, height: 38, decoration: BoxDecoration(color: lavender, borderRadius: BorderRadius.circular(12)),
+              child: const Icon(Icons.auto_awesome, color: purple, size: 20)),
+          const SizedBox(width: 12),
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            const Text('AI photo scan', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+            Text('for ${p.label}', style: const TextStyle(color: muted, fontSize: 12)),
+          ])),
         ]),
-      )),
+        const SizedBox(height: 16),
+        // 1. Your details
+        _stepLabel('1', 'Your details'),
+        const SizedBox(height: 8),
+        Row(children: [
+          SizedBox(width: 110, child: TextField(
+            controller: height, keyboardType: TextInputType.number,
+            decoration: const InputDecoration(labelText: 'Height', suffixText: 'cm', isDense: true),
+            onChanged: (v) { final n = double.tryParse(v); if (n != null && n >= 140 && n <= 215) { p.heightCm = n; s.changed(); } },
+          )),
+          const SizedBox(width: 10),
+          Expanded(child: DropdownButtonFormField<String>(
+            initialValue: garment, isExpanded: true, decoration: const InputDecoration(labelText: 'Outfit style', isDense: true),
+            items: [for (final g in const ['Ankara / Couture', 'Modern Agbada', 'Classic Suit', 'Casual Co-ord']) DropdownMenuItem(value: g, child: Text(g, overflow: TextOverflow.ellipsis))],
+            onChanged: (v) => setState(() => garment = v!),
+          )),
+        ]),
+        const SizedBox(height: 10),
+        Wrap(spacing: 8, children: [
+          for (final d in const ['Tailored', 'Relaxed', 'Structured']) ChoiceChip(
+            label: Text(d), selected: p.fitPreference == d, showCheckmark: false,
+            onSelected: (_) { p.fitPreference = d; s.changed(); },
+            selectedColor: purple, backgroundColor: bg, side: BorderSide(color: p.fitPreference == d ? purple : line),
+            labelStyle: TextStyle(fontWeight: FontWeight.w700, color: p.fitPreference == d ? Colors.white : dark),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          ),
+        ]),
+        const SizedBox(height: 18),
+        // 2. Photos
+        _stepLabel('2', 'Your photos'),
+        const SizedBox(height: 4),
+        const Text('Head to feet, facing the camera, fitted clothes, good light. Ask someone to take them.', style: TextStyle(color: muted, fontSize: 12)),
+        const SizedBox(height: 10),
+        Row(children: [
+          Expanded(child: _photoSlot('Front', 'Required', front, () => _photoChoice(true), () => setState(() => front = null))),
+          const SizedBox(width: 10),
+          Expanded(child: _photoSlot('Side', 'Optional, more accurate', side, () => _photoChoice(false), () => setState(() => side = null))),
+        ]),
+        if (analyzing) ...[
+          const SizedBox(height: 14),
+          ClipRRect(borderRadius: BorderRadius.circular(4), child: const LinearProgressIndicator(minHeight: 6, backgroundColor: lavender, color: purple)),
+          const SizedBox(height: 6),
+          const Text('Reading your proportions… this takes a few seconds.', style: TextStyle(color: muted, fontSize: 12)),
+        ] else if (front != null) ...[
+          const SizedBox(height: 12),
+          OutlinedButton.icon(style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(46)),
+              onPressed: _extract, icon: const Icon(Icons.refresh, size: 18), label: const Text('Scan again')),
+        ],
+      ]))),
+      if (a != null) ...[
+        const SizedBox(height: 14),
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: _summary(a)),
+      ],
       const SizedBox(height: 14),
       // Sliders
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: card(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -279,10 +242,104 @@ class _StudioScreenState extends State<StudioScreen> {
     ]);
   }
 
-  void _sideChoice() => showModalBottomSheet(context: context, builder: (c) => SafeArea(child: Column(mainAxisSize: MainAxisSize.min, children: [
-        ListTile(leading: const Icon(Icons.photo_camera), title: const Text('Take side photo'), onTap: () { Navigator.pop(c); _addSide(camera: true); }),
-        ListTile(leading: const Icon(Icons.photo_library), title: const Text('Choose from gallery'), onTap: () { Navigator.pop(c); _addSide(); }),
-      ])));
+  Widget _stepLabel(String n, String t) => Row(children: [
+        Container(width: 22, height: 22, alignment: Alignment.center, decoration: const BoxDecoration(color: purple, shape: BoxShape.circle),
+            child: Text(n, style: const TextStyle(color: Colors.white, fontSize: 11.5, fontWeight: FontWeight.w900))),
+        const SizedBox(width: 8),
+        Text(t, style: const TextStyle(fontWeight: FontWeight.w800)),
+      ]);
+
+  Widget _photoSlot(String title, String hint, Uint8List? img, VoidCallback add, VoidCallback clear) => AspectRatio(
+        aspectRatio: 3 / 4,
+        child: ClipRRect(borderRadius: BorderRadius.circular(18), child: img != null
+            ? Stack(fit: StackFit.expand, children: [
+                Image.memory(img, fit: BoxFit.cover),
+                Positioned(left: 8, bottom: 8, child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(8)),
+                    child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)))),
+                if (!analyzing) Positioned(top: 6, right: 6, child: Material(color: Colors.black54, shape: const CircleBorder(),
+                    child: IconButton(visualDensity: VisualDensity.compact, onPressed: clear, icon: const Icon(Icons.close, color: Colors.white, size: 18)))),
+              ])
+            : Material(color: bg, child: InkWell(onTap: analyzing ? null : add, child: DecoratedBox(
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(18), border: Border.all(color: lavender, width: 2)),
+                child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  Container(width: 46, height: 46, decoration: const BoxDecoration(color: lavender, shape: BoxShape.circle),
+                      child: const Icon(Icons.add_a_photo_outlined, color: purple)),
+                  const SizedBox(height: 8),
+                  Text('$title photo', style: const TextStyle(fontWeight: FontWeight.w800)),
+                  Text(hint, textAlign: TextAlign.center, style: const TextStyle(color: muted, fontSize: 11)),
+                ]),
+              )))),
+      );
+
+  void _photoChoice(bool isFront) => showModalBottomSheet(context: context, showDragHandle: true,
+      builder: (c) => StatefulBuilder(builder: (c, set) => SafeArea(child: Padding(padding: const EdgeInsets.fromLTRB(8, 0, 8, 12), child: Column(mainAxisSize: MainAxisSize.min, children: [
+        ListTile(leading: const Icon(Icons.photo_camera, color: purple), title: Text('Take ${isFront ? 'front' : 'side'} photo'), subtitle: const Text("Opens your phone's camera"),
+            onTap: () { Navigator.pop(c); isFront ? _phoneCameraFront() : _addSide(camera: true); }),
+        ListTile(leading: const Icon(Icons.photo_library_outlined, color: purple), title: const Text('Choose from gallery'),
+            onTap: () { Navigator.pop(c); isFront ? _uploadFront() : _addSide(); }),
+        if (isFront) ListTile(leading: const Icon(Icons.timer_outlined, color: purple), title: const Text('Live auto-scan (beta)'),
+            subtitle: Row(children: [const Text('Timer: '), for (final t in const [5, 8, 12]) Padding(padding: const EdgeInsets.only(right: 4),
+                child: ChoiceChip(visualDensity: VisualDensity.compact, label: Text('${t}s'), selected: delay == t, showCheckmark: false,
+                    onSelected: (_) { setState(() => delay = t); set(() {}); }))]),
+            onTap: () { Navigator.pop(c); _scan(); }),
+      ])))));
+
+  /// Calm, scannable summary of what the AI found; the long notes fold away.
+  Widget _summary(FitAnalysis a) {
+    final d = a.details;
+    Widget fact(IconData i, String k, String v) => Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16)),
+          child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Icon(i, size: 18, color: purple), const SizedBox(width: 10),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(k, style: const TextStyle(color: muted, fontSize: 11, fontWeight: FontWeight.w700)),
+              const SizedBox(height: 2),
+              Text(v, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12.5, height: 1.35)),
+            ])),
+          ]),
+        );
+    return card(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Row(children: [
+        Icon(Icons.auto_awesome, color: purple, size: 18), SizedBox(width: 6),
+        Text('What the AI found', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16)),
+      ]),
+      const SizedBox(height: 12),
+      Container(
+        width: double.infinity, padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(gradient: const LinearGradient(colors: [purple, Color(0xFF4B2FB8)]), borderRadius: BorderRadius.circular(16)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          const Text('Suggested base size', style: TextStyle(color: Colors.white70, fontSize: 11.5, fontWeight: FontWeight.w700)),
+          const SizedBox(height: 2),
+          Text(d.recommendedBaseSize, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900, height: 1.25)),
+        ]),
+      ),
+      const SizedBox(height: 10),
+      fact(Icons.accessibility_new, 'Body build', d.bodyBuild),
+      const SizedBox(height: 8),
+      fact(Icons.open_in_full, 'Shoulders', d.shoulderProfile),
+      const SizedBox(height: 8),
+      fact(Icons.straighten, 'Ease', a.easeRecommendation),
+      Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          tilePadding: EdgeInsets.zero, childrenPadding: const EdgeInsets.only(bottom: 8),
+          title: const Text('More notes for your tailor', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5, color: purple)),
+          expandedCrossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (final (k, v) in [('Torso', d.torsoProportion), ('Posture', d.postureNote), ('Silhouette', a.silhouetteNote), ('Photo quality', d.lightingAndFraming)])
+              Padding(padding: const EdgeInsets.only(bottom: 8), child: Text.rich(TextSpan(children: [
+                TextSpan(text: '$k: ', style: const TextStyle(fontWeight: FontWeight.w800)),
+                TextSpan(text: v, style: const TextStyle(color: muted)),
+              ]), style: const TextStyle(fontSize: 12.5, height: 1.4))),
+            for (final n in a.tailorNotes) Padding(padding: const EdgeInsets.only(bottom: 4),
+                child: Text('• $n', style: const TextStyle(color: muted, fontSize: 12.5, height: 1.4))),
+          ],
+        ),
+      ),
+    ]));
+  }
 
   Widget _slider(AppState s, FitProfile p, String k) {
     final b = measurementBounds[k]!;
@@ -311,37 +368,4 @@ class _StudioScreenState extends State<StudioScreen> {
     );
   }
 
-  Widget _label(String t) => Padding(padding: const EdgeInsets.only(bottom: 6),
-      child: Text(t.toUpperCase(), style: const TextStyle(color: lavender, fontSize: 10.5, fontWeight: FontWeight.w700, letterSpacing: 0.8)));
-
-  Widget _pills(List<String> opts, String sel, void Function(String) on) => Row(children: [
-        for (final o in opts) Expanded(child: Padding(padding: const EdgeInsets.only(right: 6), child: Material(
-          color: o == sel ? purple : Colors.white.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12),
-          child: InkWell(borderRadius: BorderRadius.circular(12), onTap: () => on(o), child: Padding(padding: const EdgeInsets.symmetric(vertical: 11),
-              child: Text(o, textAlign: TextAlign.center, style: TextStyle(color: o == sel ? Colors.white : Colors.white70, fontWeight: FontWeight.w700, fontSize: 12.5)))),
-        ))),
-      ]);
-
-  InputDecoration _darkInput(String label) => InputDecoration(labelText: label, labelStyle: const TextStyle(color: Colors.white60), isDense: true,
-      filled: true, fillColor: Colors.white.withValues(alpha: 0.08),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Colors.white24)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: lavender)));
-
-  Widget _darkField(Widget w) => Theme(data: Theme.of(context).copyWith(inputDecorationTheme: const InputDecorationTheme()), child: w);
-
-  Widget _darkButton(IconData i, String t, VoidCallback? on) => OutlinedButton.icon(
-        style: OutlinedButton.styleFrom(foregroundColor: Colors.white, side: const BorderSide(color: Colors.white24), minimumSize: const Size.fromHeight(48)),
-        onPressed: on, icon: Icon(i, size: 18), label: Text(t));
-
-  Widget _thumb(Uint8List b, String label, VoidCallback? clear) => AspectRatio(aspectRatio: 3 / 4, child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(fit: StackFit.expand, children: [
-          Image.memory(b, fit: BoxFit.cover),
-          Positioned(left: 8, bottom: 8, child: Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(8)),
-              child: Text(label, style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w700)))),
-          if (clear != null) Positioned(top: 6, right: 6, child: Material(color: Colors.black54, shape: const CircleBorder(),
-              child: IconButton(visualDensity: VisualDensity.compact, onPressed: clear, icon: const Icon(Icons.close, color: Colors.white, size: 18)))),
-        ]),
-      ));
 }

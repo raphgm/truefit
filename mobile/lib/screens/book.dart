@@ -22,6 +22,13 @@ class _BookScreenState extends State<BookScreen> {
   Uint8List? photo;
   StyleAnalysis? style;
   final notes = TextEditingController();
+  final _scroll = ScrollController();
+
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final d = await showDatePicker(context: context, firstDate: now, lastDate: now.add(const Duration(days: 730)), initialDate: eventDate ?? now.add(const Duration(days: 21)));
+    if (d != null) setState(() => eventDate = d);
+  }
 
   @override
   void didChangeDependencies() {
@@ -76,7 +83,7 @@ class _BookScreenState extends State<BookScreen> {
   Widget build(BuildContext context) {
     final s = AppScope.of(context);
     final p = s.activeProfile;
-    return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 28), children: [
+    return ListView(controller: _scroll, padding: const EdgeInsets.fromLTRB(16, 8, 16, 28), children: [
       // Banner
       pageHeader('Book a Fitting', '${houseAtelier.location} · Turnaround ${houseAtelier.turnaround}',
           image: 'assets/images/outfit_elegant_boubou.jpg', icon: Icons.content_cut, eyebrow: houseAtelier.name, inset: false, tint: const Color(0xFFFFF1D6),
@@ -170,11 +177,7 @@ class _BookScreenState extends State<BookScreen> {
         style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(54), alignment: Alignment.centerLeft, backgroundColor: Colors.white),
         icon: const Icon(Icons.calendar_month),
         label: Text(eventDate == null ? 'Target event / needed by date' : 'Needed by ${shortDate(eventDate!, year: true)}'),
-        onPressed: () async {
-          final now = DateTime.now();
-          final d = await showDatePicker(context: context, firstDate: now, lastDate: now.add(const Duration(days: 730)), initialDate: eventDate ?? now.add(const Duration(days: 21)));
-          if (d != null) setState(() => eventDate = d);
-        },
+        onPressed: _pickDate,
       ),
       if (rush) Container(
         margin: const EdgeInsets.only(top: 12), padding: const EdgeInsets.all(14),
@@ -199,16 +202,61 @@ class _BookScreenState extends State<BookScreen> {
         label: Text('Submit Order (${custom ? 'Custom Quote' : outfit.priceLabel})'),
       ),
       const SizedBox(height: 28),
-      Text('How your order works', style: display(20)),
-      const SizedBox(height: 12),
-      for (final (n, t, sub) in howItWorks) Padding(padding: const EdgeInsets.only(bottom: 10), child: card(child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(n, style: const TextStyle(color: purple, fontWeight: FontWeight.w900, fontSize: 18)),
-        const SizedBox(width: 14),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(t, style: const TextStyle(fontWeight: FontWeight.w800)),
-          Text(sub, style: const TextStyle(color: muted, fontSize: 12.5)),
-        ])),
-      ]))),
+      _howItWorks(s),
     ]);
+  }
+
+  /// "How your order works" as a live timeline: each step shows done / next / to come and takes you there.
+  Widget _howItWorks(AppState s) {
+    final measured = s.profiles.any((p) => p.analysis != null || !(p.updatedAt == 'Baseline profile' || p.updatedAt == 'New profile'));
+    final steps = <(IconData, String, String, bool, VoidCallback)>[
+      (Icons.checkroom, 'Choose or upload a look', custom ? (photo != null ? 'Your inspiration photo is ready' : 'Upload your inspiration photo') : 'Selected: ${outfit.name}',
+          !custom || photo != null, () => _scroll.animateTo(0, duration: const Duration(milliseconds: 400), curve: Curves.easeOut)),
+      (Icons.straighten, 'Scan your fit profile', measured ? '${s.activeProfile.label} is ready' : 'Measure with photos in Fit Studio', measured, () => s.go(AppTab.studio)),
+      (Icons.event, 'Select fabric and date', eventDate == null ? 'Pick your event or needed-by date' : '$fabric · ${shortDate(eventDate!, year: true)}', eventDate != null, _pickDate),
+      (Icons.local_shipping_outlined, 'Track progress and delivery', s.orders.isEmpty ? 'Fitting photos, stage updates and delivery notices' : '${s.orders.length} ${s.orders.length == 1 ? 'order' : 'orders'} in progress',
+          s.orders.isNotEmpty, () => s.go(AppTab.orders)),
+    ];
+    final next = steps.indexWhere((x) => !x.$4);
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(24), border: Border.all(color: line)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Expanded(child: Text('How your order works', style: display(19))),
+          Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: lavender, borderRadius: BorderRadius.circular(20)),
+              child: Text('${steps.where((x) => x.$4).length} of ${steps.length} done', style: const TextStyle(color: purple, fontWeight: FontWeight.w800, fontSize: 12))),
+        ]),
+        const SizedBox(height: 14),
+        for (var i = 0; i < steps.length; i++) IntrinsicHeight(child: Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          SizedBox(width: 40, child: Column(children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300), width: 36, height: 36,
+              decoration: BoxDecoration(shape: BoxShape.circle,
+                  color: steps[i].$4 ? purple : (i == next ? Colors.white : bg),
+                  border: Border.all(color: steps[i].$4 || i == next ? purple : line, width: 2),
+                  boxShadow: i == next ? [BoxShadow(color: purple.withValues(alpha: 0.25), blurRadius: 12)] : null),
+              child: Icon(steps[i].$4 ? Icons.check_rounded : steps[i].$1, size: 18, color: steps[i].$4 ? Colors.white : (i == next ? purple : muted)),
+            ),
+            if (i < steps.length - 1) Expanded(child: Container(width: 3, margin: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(color: steps[i].$4 ? purple : line, borderRadius: BorderRadius.circular(2)))),
+          ])),
+          const SizedBox(width: 12),
+          Expanded(child: InkWell(
+            borderRadius: BorderRadius.circular(14), onTap: steps[i].$5,
+            child: Padding(padding: const EdgeInsets.fromLTRB(4, 6, 4, 16), child: Row(children: [
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('Step ${i + 1}${i == next ? ' · next' : ''}', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: i == next ? purple : muted, letterSpacing: 0.3)),
+                const SizedBox(height: 2),
+                Text(steps[i].$2, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14.5)),
+                const SizedBox(height: 2),
+                Text(steps[i].$3, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(color: muted, fontSize: 12.5)),
+              ])),
+              const Icon(Icons.chevron_right, color: muted),
+            ])),
+          )),
+        ])),
+      ]),
+    );
   }
 }

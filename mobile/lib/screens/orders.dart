@@ -173,7 +173,7 @@ class ProfileScreen extends StatelessWidget {
     ];
     return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
       pageHeader(u.name, u.email,
-          image: 'assets/images/outfit_weekend_fit.jpg', icon: Icons.person_outline, eyebrow: u.isGuest ? 'Guest account' : 'My account', tint: const Color(0xFFFFE9D9),
+          image: 'assets/images/outfit_weekend_fit.jpg', icon: Icons.person_outline, eyebrow: u.isGuest ? 'Guest account' : 'My account', tint: const Color(0xFFD4F1F8),
           trailing: bannerChip(Icons.checkroom, '${s.favorites.length} saved · ${s.orders.length} orders')),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: GridView.count(
         crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
