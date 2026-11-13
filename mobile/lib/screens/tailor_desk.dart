@@ -31,8 +31,8 @@ class _TailorDeskScreenState extends State<TailorDeskScreen> {
     final active = s.orders.where((o) => o.stage != orderStages.last).length;
     final rush = s.orders.where((o) => o.isRushOrder).length;
     return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 24), children: [
-      pageHeader('Tailor Studio Desk', 'Inspect client measurements, open cutting sheets, update stages, and send WIP fitting photos.',
-          image: 'assets/images/hero_atelier_studio.jpg', icon: Icons.work_outline, eyebrow: 'Studio management · ${houseAtelier.name}', inset: false,
+      pageHeader('Tailor Studio Desk', 'Measurements, cut-sheets, stages and fitting photos.',
+          image: 'assets/images/hero_atelier_studio.jpg', icon: Icons.work_outline, eyebrow: 'Studio management', inset: false, tint: const Color(0xFFE5ECF6),
           child: Row(children: [_stat(Icons.receipt_long, '${s.orders.length}', 'Orders', lavender), _stat(Icons.hourglass_bottom, '$active', 'In queue', const Color(0xFFFDE68A)), _stat(Icons.bolt, '$rush', 'Rush', const Color(0xFFFBCFE8), last: true)])),
       if (s.orders.isEmpty)
         card(padding: const EdgeInsets.all(26), child: const Column(children: [
@@ -48,16 +48,15 @@ class _TailorDeskScreenState extends State<TailorDeskScreen> {
 
   Widget _stat(IconData icon, String v, String k, Color tint, {bool last = false}) => Expanded(child: Container(
         height: 64, margin: EdgeInsets.only(right: last ? 0 : 8), padding: const EdgeInsets.fromLTRB(10, 8, 8, 8),
-        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.07), borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.08))),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(16)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Row(children: [
             Container(width: 22, height: 22, decoration: BoxDecoration(color: tint, borderRadius: BorderRadius.circular(7)),
                 child: Icon(icon, size: 13, color: dark)),
             const SizedBox(width: 7),
-            Text(v, style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w900, height: 1)),
+            Text(v, style: const TextStyle(color: dark, fontSize: 17, fontWeight: FontWeight.w900, height: 1)),
           ]),
-          Text(k, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: Colors.white60, fontSize: 11.5, fontWeight: FontWeight.w600)),
+          Text(k, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: muted, fontSize: 11.5, fontWeight: FontWeight.w600)),
         ]),
       ));
 

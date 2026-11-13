@@ -12,8 +12,8 @@ class SavedScreen extends StatelessWidget {
     final s = AppScope.of(context);
     final saved = outfits.where((o) => s.favorites.contains(o.id)).toList();
     return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
-      pageHeader('Saved Looks', 'Your personal curation of custom styles ready to commission.',
-          image: 'assets/images/outfit_ankara_elegance.jpg', icon: Icons.favorite_border, eyebrow: 'Your lookbook',
+      pageHeader('Saved Looks', 'Styles you love, ready to commission.',
+          image: 'assets/images/outfit_ankara_elegance.jpg', icon: Icons.favorite_border, eyebrow: 'Your lookbook', tint: const Color(0xFFFFE4EF),
           trailing: bannerChip(Icons.favorite, '${saved.length} saved')),
       if (saved.isEmpty)
         _empty(Icons.favorite_border, 'No saved looks yet', 'Explore the lookbook and tap the heart on any design you love.', 'Browse Lookbook', () => s.go(AppTab.home))
@@ -54,8 +54,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     final s = AppScope.of(context);
     return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
-      pageHeader('My Orders', 'Track each custom garment, see fitting updates, and open your measurement sheet.',
-          image: 'assets/images/outfit_classic_suit.jpg', icon: Icons.shopping_bag_outlined, eyebrow: 'Your commissions',
+      pageHeader('My Orders', 'Track each garment, fitting updates and cut-sheets.',
+          image: 'assets/images/outfit_classic_suit.jpg', icon: Icons.shopping_bag_outlined, eyebrow: 'Your commissions', tint: const Color(0xFFE0ECFF),
           trailing: bannerChip(Icons.receipt_long, '${s.orders.length} ${s.orders.length == 1 ? 'order' : 'orders'}')),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: OutlinedButton.icon(
           style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(46), backgroundColor: Colors.white),
@@ -159,7 +159,7 @@ class ProfileScreen extends StatelessWidget {
     ];
     return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
       pageHeader(u.name, u.email,
-          image: 'assets/images/outfit_weekend_fit.jpg', icon: Icons.person_outline, eyebrow: u.isGuest ? 'Guest account' : 'My account',
+          image: 'assets/images/outfit_weekend_fit.jpg', icon: Icons.person_outline, eyebrow: u.isGuest ? 'Guest account' : 'My account', tint: const Color(0xFFFFE9D9),
           trailing: bannerChip(Icons.checkroom, '${s.favorites.length} saved · ${s.orders.length} orders')),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: card(padding: EdgeInsets.zero, child: Column(children: [
         for (final (i, r) in rows.indexed) ...[

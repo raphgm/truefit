@@ -79,9 +79,8 @@ class _BookScreenState extends State<BookScreen> {
     return ListView(padding: const EdgeInsets.fromLTRB(16, 8, 16, 28), children: [
       // Banner
       pageHeader('Book a Fitting', '${houseAtelier.location} · Turnaround ${houseAtelier.turnaround}',
-          image: 'assets/images/outfit_elegant_boubou.jpg', icon: Icons.content_cut, eyebrow: houseAtelier.name, inset: false,
-          trailing: bannerChip(Icons.star_rounded, houseAtelier.rating.toStringAsFixed(1)),
-          child: Text(houseAtelier.bio, style: TextStyle(color: Colors.white.withValues(alpha: 0.72), fontSize: 12.5, height: 1.4))),
+          image: 'assets/images/outfit_elegant_boubou.jpg', icon: Icons.content_cut, eyebrow: houseAtelier.name, inset: false, tint: const Color(0xFFFFF1D6),
+          trailing: bannerChip(Icons.star_rounded, houseAtelier.rating.toStringAsFixed(1))),
       const SizedBox(height: 4),
       Text('Book a Custom Order', style: display(24)),
       const SizedBox(height: 4),
