@@ -1,6 +1,7 @@
 // Welcome, sign in, sign up and forgot password. Accounts are local to this device (no server yet).
 import 'package:material_ui/material_ui.dart';
 
+import '../brand.dart';
 import '../models.dart';
 import '../state.dart';
 import '../ui.dart';
@@ -49,7 +50,7 @@ class _AuthScreenState extends State<AuthScreen> {
               Container(width: 38, height: 38, decoration: BoxDecoration(color: purple, borderRadius: BorderRadius.circular(12)),
                   child: const Icon(Icons.checkroom, color: Colors.white, size: 22)),
               const SizedBox(width: 10),
-              const Text('TrueFit Studio', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18)),
+              const Text(appName, style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 18)),
               const Spacer(),
               TextButton(onPressed: () => go(AuthView.login), child: const Text('Sign In', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700))),
             ]),
@@ -58,12 +59,12 @@ class _AuthScreenState extends State<AuthScreen> {
                 decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.14), borderRadius: BorderRadius.circular(20)),
                 child: const Row(mainAxisSize: MainAxisSize.min, children: [
                   Icon(Icons.auto_awesome, color: lavender, size: 16), SizedBox(width: 6),
-                  Text('AI Fit Studio · Smart measurements', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
+                  Text(welcomeBadge, style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w600)),
                 ])),
             const SizedBox(height: 14),
-            const Text('BESPOKE FASHION & SMART TAILORING', style: TextStyle(color: lavender, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.2)),
+            const Text(welcomeEyebrow, style: TextStyle(color: lavender, fontSize: 11, fontWeight: FontWeight.w700, letterSpacing: 1.2)),
             const SizedBox(height: 8),
-            Text('Your style.\nYour perfect fit.', style: display(40, color: Colors.white)),
+            Text(welcomeHeadline, style: display(40, color: Colors.white)),
             const SizedBox(height: 12),
             Text('Browse curated Ankara, traditional, and contemporary silhouettes, capture your AI-assisted measurements, and book your custom piece directly with the studio.',
                 style: TextStyle(color: Colors.white.withValues(alpha: 0.8), height: 1.45)),
@@ -114,7 +115,7 @@ class _AuthScreenState extends State<AuthScreen> {
         if (view == AuthView.signup) CheckboxListTile(
           contentPadding: EdgeInsets.zero, controlAffinity: ListTileControlAffinity.leading, value: accepted,
           onChanged: (v) => setState(() => accepted = v ?? false),
-          title: const Text('I agree to the TrueFit Studio Terms of Service and Privacy Policy.', style: TextStyle(fontSize: 13)),
+          title: const Text('I agree to the $appName Terms of Service and Privacy Policy.', style: TextStyle(fontSize: 13)),
         ),
         const SizedBox(height: 12),
         FilledButton(style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(54)), onPressed: () => _submit(s),

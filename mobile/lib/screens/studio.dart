@@ -114,7 +114,7 @@ class _StudioScreenState extends State<StudioScreen> {
     final a = p.analysis;
     return ListView(padding: const EdgeInsets.only(bottom: 24), children: [
       pageHeader('Fit Studio', 'Measurement profiles for you, your family or a group.',
-          image: 'assets/images/outfit_modern_agbada.jpg', icon: Icons.straighten, eyebrow: 'AI measurements', tint: const Color(0xFFEAE3FF),
+          image: 'assets/images/outfit_modern_agbada.jpg', icon: Icons.straighten, eyebrow: 'AI measurements', tint: lavender,
           trailing: bannerChip(Icons.person_outline, '${s.profiles.length} ${s.profiles.length == 1 ? 'profile' : 'profiles'}')),
       Padding(padding: const EdgeInsets.symmetric(horizontal: 16), child: SegmentedButton<bool>(
         segments: const [ButtonSegment(value: false, label: Text('Centimeters (cm)')), ButtonSegment(value: true, label: Text('Inches (in)'))],
@@ -308,7 +308,7 @@ class _StudioScreenState extends State<StudioScreen> {
       const SizedBox(height: 12),
       Container(
         width: double.infinity, padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(gradient: const LinearGradient(colors: [purple, Color(0xFF4B2FB8)]), borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(gradient: const LinearGradient(colors: [purple, purpleDark]), borderRadius: BorderRadius.circular(16)),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           const Text('Suggested base size', style: TextStyle(color: Colors.white70, fontSize: 11.5, fontWeight: FontWeight.w700)),
           const SizedBox(height: 2),

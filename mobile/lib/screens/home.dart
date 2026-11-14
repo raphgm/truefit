@@ -1,6 +1,7 @@
 // Home: editorial hero, AI Measurement Studio strip, lookbook with categories, booking banner.
 import 'package:material_ui/material_ui.dart';
 
+import '../brand.dart';
 import '../models.dart';
 import '../state.dart';
 import '../ui.dart';
@@ -32,9 +33,9 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Text(houseAtelier.name, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: dark)),
           )),
           Positioned(left: 20, right: 20, bottom: 20, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('Your perfect fit.\nYour own style.', style: display(30, color: Colors.white)),
+            Text(homeHeadline, style: display(30, color: Colors.white)),
             const SizedBox(height: 8),
-            Text('Made-to-measure Ankara, traditional and contemporary pieces, cut to your AI-scanned measurements.',
+            Text(homeBlurb,
                 style: TextStyle(color: Colors.white.withValues(alpha: 0.82), height: 1.4, fontSize: 13.5)),
             const SizedBox(height: 16),
             Row(children: [

@@ -2,6 +2,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'brand.dart';
+
 enum OutfitCategory { ankara, traditional, casual, formal }
 
 const categoryLabel = {
@@ -166,9 +168,9 @@ class UserAccount {
 
 // ---- Catalog ----
 
-const heroImage = 'assets/images/hero_atelier_studio.jpg';
+const _tfHero = 'assets/images/hero_atelier_studio.jpg';
 
-const houseAtelier = Atelier(
+const _tfAtelier = Atelier(
   id: 'ifeoma-couture', name: 'Ifeoma Couture', location: 'Abuja, Nigeria',
   specialty: 'Bespoke Ankara, Traditional & Contemporary Tailoring', rating: 4.9, completedCount: 340, turnaround: '7–14 days',
   tint: 0xFFFFE9D9, startingPrice: 'From ₦18,000',
@@ -185,7 +187,7 @@ const fittingSlots = [
   'Studio Fitting · This Friday 11:00 AM', 'Virtual Video Check-In · Saturday 1:00 PM',
 ];
 
-const outfits = [
+const _tfOutfits = [
   Outfit(id: 'ankara-elegance', name: 'Ankara Elegance', category: OutfitCategory.ankara, priceNaira: 25000, priceLabel: 'From ₦25,000',
       image: 'assets/images/outfit_ankara_elegance.jpg', tint: 0xFFFFE4EF, aspect: 3 / 4, fabric: '100% Dutch Wax Cotton', leadTime: '7–10 days', minDays: 7,
       description: 'Structured square-neckline midi dress with sculpted volume sleeves and tailored waist darting cut to your exact bodice proportions.'),
@@ -205,6 +207,40 @@ const outfits = [
       image: 'assets/images/outfit_weekend_fit.jpg', tint: 0xFFFFE4EF, aspect: 4 / 5, fabric: 'Slub Textured Cotton & Twill', leadTime: '5–8 days', minDays: 5,
       description: 'Open camp-collar textured shirt paired with double-pleated tapered trousers designed for clean everyday movement.'),
 ];
+
+// ---- StitchPerfect (Kemi Stitches, Lagos). Photos: Pexels (free to use). ----
+const _spHero = 'assets/images/sp/hero.jpg';
+const _spAtelier = Atelier(
+  id: 'kemi-stitches', name: 'Kemi Stitches', location: 'Lekki, Lagos',
+  specialty: 'Aso-ebi, Ankara and celebration wear', rating: 0, completedCount: 0, turnaround: '5–12 days',
+  tint: 0xFFFDE6D8, startingPrice: 'From ₦22,000',
+  bio: 'A Lagos studio for aso-ebi groups, Ankara statement pieces and celebration wear, cut to the measurements you scan at home and finished by hand.',
+);
+const _spOutfits = [
+  Outfit(id: 'sp-ankara-bell-gown', name: 'Ankara Bell-Sleeve Gown', category: OutfitCategory.ankara, priceNaira: 32000, priceLabel: 'From ₦32,000',
+      image: 'assets/images/sp/ankara_gown.jpg', tint: 0xFFFDE6D8, aspect: 3 / 4, fabric: 'Premium Dutch wax Ankara', leadTime: '6–9 days', minDays: 6,
+      description: 'A flowing gown with dramatic bell sleeves and a fitted bodice, made for weddings, owambe and church thanksgiving.'),
+  Outfit(id: 'sp-his-hers-set', name: 'His & Hers Celebration Set', category: OutfitCategory.traditional, priceNaira: 78000, priceLabel: 'From ₦78,000',
+      image: 'assets/images/sp/celebration_set.jpg', tint: 0xFFFFF1D6, aspect: 3 / 4, fabric: 'Embroidered voile and Ankara', leadTime: '10–14 days', minDays: 10,
+      description: 'A matching couple set: an embroidered kaftan for him and a tailored Ankara gown for her, coordinated in one palette.'),
+  Outfit(id: 'sp-embroidered-gown', name: 'Embroidered Flare Gown', category: OutfitCategory.formal, priceNaira: 48000, priceLabel: 'From ₦48,000',
+      image: 'assets/images/sp/embroidered_gown.jpg', tint: 0xFFFFF4C2, aspect: 4 / 5, fabric: 'Crepe with corded embroidery', leadTime: '9–12 days', minDays: 9,
+      description: 'A full, flared gown with bold corded embroidery at the neckline and hem. A showpiece for engagements and dinners.'),
+  Outfit(id: 'sp-ankara-fitted', name: 'Fitted Ankara Midi', category: OutfitCategory.ankara, priceNaira: 26000, priceLabel: 'From ₦26,000',
+      image: 'assets/images/sp/ankara_fitted.jpg', tint: 0xFFE0ECFF, aspect: 3 / 4, fabric: 'Ankara with contrast yoke', leadTime: '5–8 days', minDays: 5,
+      description: 'A body-skimming midi with structured flare sleeves and a contrast yoke, easy to wear from office to evening.'),
+  Outfit(id: 'sp-kimono-set', name: 'Print Kimono Set', category: OutfitCategory.casual, priceNaira: 22000, priceLabel: 'From ₦22,000',
+      image: 'assets/images/sp/kimono_set.jpg', tint: 0xFFF1F5F9, aspect: 4 / 5, fabric: 'Printed cotton and adire', leadTime: '5–7 days', minDays: 5,
+      description: 'A relaxed printed kimono over a matching inner set, for weekends, brunch and travel.'),
+  Outfit(id: 'sp-evening-gown', name: 'Satin Evening Gown', category: OutfitCategory.formal, priceNaira: 55000, priceLabel: 'From ₦55,000',
+      image: 'assets/images/sp/evening_gown.jpg', tint: 0xFFFFE4EF, aspect: 3 / 4, fabric: 'Heavy satin', leadTime: '8–12 days', minDays: 8,
+      description: 'A clean, floor-length satin gown with a fitted silhouette, for galas, dinners and bridal trains.'),
+];
+
+// ---- The active brand's catalogue ----
+const heroImage = isStitch ? _spHero : _tfHero;
+const houseAtelier = isStitch ? _spAtelier : _tfAtelier;
+const outfits = isStitch ? _spOutfits : _tfOutfits;
 
 Outfit outfitById(String id) => outfits.firstWhere((o) => o.id == id, orElse: () => outfits.first);
 

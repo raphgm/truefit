@@ -6,6 +6,7 @@ import 'dart:typed_data';
 import 'package:material_ui/material_ui.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'brand.dart';
 import 'models.dart';
 
 enum AppTab { home, studio, book, saved, orders, profile, tailorDesk }
@@ -27,8 +28,8 @@ class AppState extends ChangeNotifier {
   void notify(String msg) => toasts.value = msg;
 
   static const _k = (
-    user: 'truefit_user_v1', favorites: 'truefit_favorites_v1', profiles: 'truefit_fit_profiles_v1',
-    active: 'truefit_active_profile_v1', orders: 'truefit_orders_v2', settings: 'truefit_settings_v1',
+    user: '${storagePrefix}_user_v1', favorites: '${storagePrefix}_favorites_v1', profiles: '${storagePrefix}_fit_profiles_v1',
+    active: '${storagePrefix}_active_profile_v1', orders: '${storagePrefix}_orders_v2', settings: '${storagePrefix}_settings_v1',
   );
 
   Future<void> load() async {

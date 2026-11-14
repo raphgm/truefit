@@ -2,6 +2,7 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:material_ui/material_ui.dart';
 
+import 'brand.dart';
 import 'screens/auth.dart';
 import 'screens/book.dart';
 import 'screens/home.dart';
@@ -24,7 +25,7 @@ class TrueFitApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final rounded = RoundedRectangleBorder(borderRadius: BorderRadius.circular(14));
     return MaterialApp(
-      title: 'TrueFit Studio',
+      title: appName,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
@@ -110,7 +111,7 @@ class _RootState extends State<Root> {
           leading: const {AppTab.saved, AppTab.orders, AppTab.tailorDesk}.contains(s.tab) ? BackButton(onPressed: () => s.go(AppTab.profile)) : null,
           title: GestureDetector(onTap: () => s.go(AppTab.home), child: const Row(mainAxisSize: MainAxisSize.min, children: [
             Icon(Icons.checkroom, color: purple), SizedBox(width: 8),
-            Text('TrueFit Studio', style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: -0.3)),
+            Text(appName, style: TextStyle(fontWeight: FontWeight.w900, letterSpacing: -0.3)),
           ])),
           actions: [
             IconButton(tooltip: 'Saved looks', onPressed: () => s.go(AppTab.saved),
@@ -205,7 +206,7 @@ class _PhoneFrameState extends State<PhoneFrame> {
         );
     return DecoratedBox(
       decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0, -0.2), radius: 1.1,
-          colors: [Color(0xFF2E2840), Color(0xFF0C0B11)])),
+          colors: [brandFrameTop, brandFrameBottom])),
       child: Padding(padding: const EdgeInsets.all(22), child: Center(child: FittedBox(child: Padding(padding: const EdgeInsets.symmetric(horizontal: 6), child: SizedBox(width: w, height: h, child: Stack(clipBehavior: Clip.none, children: [
         button(h * 0.15, 30),               // Action button
         button(h * 0.235, 58),              // Volume up

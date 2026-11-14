@@ -29,6 +29,21 @@ android {
         versionName = flutter.versionName
     }
 
+    // One app per client. Build with --flavor <name> and the matching --dart-define=BRAND=<name>.
+    flavorDimensions += "brand"
+    productFlavors {
+        create("truefit") {
+            dimension = "brand"
+            applicationId = "ai.truefit.truefit"
+            manifestPlaceholders["appName"] = "TrueFit Studio"
+        }
+        create("stitchperfect") {
+            dimension = "brand"
+            applicationId = "com.stitchperfect.app"
+            manifestPlaceholders["appName"] = "StitchPerfect"
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

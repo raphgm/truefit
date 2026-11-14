@@ -1,6 +1,7 @@
 // Saved looks, my orders (with studio message thread) and the profile / settings screen.
 import 'package:material_ui/material_ui.dart';
 
+import '../brand.dart';
 import '../models.dart';
 import '../state.dart';
 import '../ui.dart';
@@ -180,7 +181,7 @@ class ProfileScreen extends StatelessWidget {
         mainAxisSpacing: 10, crossAxisSpacing: 10, childAspectRatio: 1.5,
         children: [
           for (final (i, r) in rows.indexed) _tile(r.$1, r.$2, r.$3, r.$4, const [
-            Color(0xFFFFE4EF), Color(0xFFEAE3FF), Color(0xFFE0ECFF), Color(0xFFFFF1D6), Color(0xFFE5ECF6), Color(0xFFF1F5F9), Color(0xFFFFE9D9),
+            Color(0xFFFFE4EF), lavender, Color(0xFFE0ECFF), Color(0xFFFFF1D6), Color(0xFFE5ECF6), Color(0xFFF1F5F9), Color(0xFFFFE9D9),
           ][i % 7]),
         ],
       )),
@@ -237,7 +238,7 @@ class _InfoSheetState extends State<_InfoSheet> {
         ListTile(contentPadding: EdgeInsets.zero, leading: const Icon(Icons.shield_outlined), title: const Text('Privacy Policy'), onTap: () => setState(() => view = 'privacy')),
       ],
       if (view == 'terms') ...[
-        const Text('TrueFit Studio provides style inspiration, AI-assisted measurement estimates, and custom fitting workflows for the studio.'),
+        const Text('$appName provides style inspiration, AI-assisted measurement estimates, and custom fitting workflows for the studio.'),
         const SizedBox(height: 8),
         const Text('Always review AI-generated measurements against a physical tape measure before final cutting on bespoke commissions.'),
         back(),
@@ -245,7 +246,7 @@ class _InfoSheetState extends State<_InfoSheet> {
       if (view == 'privacy') ...[
         const Text('Your measurement profiles, saved looks, and order records are stored on this device and attached only when you submit a fitting request.'),
         const SizedBox(height: 8),
-        const Text('Photos used in Fit Studio or Book Fitting are sent to the TrueFit server for analysis on demand and are not stored there.'),
+        const Text('Photos used in Fit Studio or Book Fitting are sent to the $appName server for analysis on demand and are not stored there.'),
         back(),
       ],
       if (view == 'help') ...[

@@ -87,7 +87,7 @@ class _BookScreenState extends State<BookScreen> {
       // Banner
       pageHeader('Book a Fitting', '${houseAtelier.location} · Turnaround ${houseAtelier.turnaround}',
           image: 'assets/images/outfit_elegant_boubou.jpg', icon: Icons.content_cut, eyebrow: houseAtelier.name, inset: false, tint: const Color(0xFFFFF1D6),
-          trailing: bannerChip(Icons.star_rounded, houseAtelier.rating.toStringAsFixed(1))),
+          trailing: houseAtelier.rating > 0 ? bannerChip(Icons.star_rounded, houseAtelier.rating.toStringAsFixed(1)) : null),
       const SizedBox(height: 4),
       Text('Book a Custom Order', style: display(24)),
       const SizedBox(height: 4),

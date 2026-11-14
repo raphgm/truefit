@@ -1,15 +1,17 @@
 // Shared colours and widgets: lookbook grid, outfit detail sheet, cut-sheet, order image.
 import 'package:material_ui/material_ui.dart';
 
+import 'brand.dart';
 import 'models.dart';
 import 'state.dart';
 
-const purple = Color(0xFF7654E8);
-const purpleDark = Color(0xFF6442D6);
-const dark = Color(0xFF211D2B);
-const bg = Color(0xFFFAF8FC);
-const muted = Color(0xFF6E687B);
-const lavender = Color(0xFFEAE3FF);
+// Brand colours (set per client in brand.dart). Names kept for the existing screens.
+const purple = brandPrimary;
+const purpleDark = brandPrimaryDark;
+const dark = brandInk;
+const bg = brandBg;
+const muted = brandMuted;
+const lavender = brandSoft;
 const peach = Color(0xFFFFE9D9);
 const rose = Color(0xFFE11D48);
 const amber = Color(0xFFB45309);
@@ -93,7 +95,7 @@ class LookbookGrid extends StatelessWidget {
         const SizedBox(height: 10),
         Text('No looks match this category', style: display(17)),
         const SizedBox(height: 4),
-        const Text('Select "For You" to browse the full TrueFit Studio lookbook.', textAlign: TextAlign.center, style: TextStyle(color: muted)),
+        const Text('Select "For You" to browse the full $appName lookbook.', textAlign: TextAlign.center, style: TextStyle(color: muted)),
       ]));
     }
     final left = [for (var i = 0; i < items.length; i += 2) items[i]];

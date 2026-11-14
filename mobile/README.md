@@ -24,3 +24,16 @@ The AI calls go to the existing `server.ts` (`/api/fit-analyze`, `/api/style-ana
 
 - Web, served by `server.ts`: `flutter build web` and serve `build/web`; the app calls `/api/...` on the same site.
 - Android: `flutter build apk --dart-define=API_BASE=https://your-truefit-server`
+
+## One codebase, several tailors (white-label)
+Each client's name, colours, studio, outfits, wording and on-device storage live in `lib/brand.dart`
+(StitchPerfect photos are in `assets/images/sp/`). Android gets a separate app ID per client, so the apps
+can be installed side by side.
+
+| Client | Web build | Android build |
+| --- | --- | --- |
+| TrueFit Studio (Ifeoma Couture) | `flutter build web --dart-define=API_BASE=...` | `flutter build apk --flavor truefit --dart-define=API_BASE=...` |
+| StitchPerfect (Kemi Stitches) | `flutter build web --dart-define=BRAND=stitchperfect --dart-define=API_BASE=...` | `flutter build apk --flavor stitchperfect --dart-define=BRAND=stitchperfect --dart-define=API_BASE=...` |
+
+Live: TrueFit Studio https://truefit-app.gabis-chaser.workers.dev · StitchPerfect https://stitchperfect-app.gabis-chaser.workers.dev
+Both currently use the AI server https://truefit-ai.gabis-chaser.workers.dev.

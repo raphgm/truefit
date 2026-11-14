@@ -26,8 +26,8 @@ Future<Map<String, dynamic>> _post(String path, Map<String, dynamic> body) async
         .timeout(const Duration(seconds: 90));
   } catch (_) {
     throw AiError(apiBase.isEmpty
-        ? 'Could not reach the TrueFit Studio server. Adjust the measurements by hand, or try again when online.'
-        : 'Could not reach the TrueFit Studio server at $apiBase. Check your connection and try again.');
+        ? 'Could not reach the AI server. Adjust the measurements by hand, or try again when online.'
+        : 'Could not reach the AI server at $apiBase. Check your connection and try again.');
   }
   Map<String, dynamic> data;
   try {
